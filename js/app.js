@@ -180,6 +180,24 @@
   const REVEAL_AT = {
     sol: 0, mercury: 0, venus: 0, earth: 0, mars: 0, jupiter: 0, saturn: 0,
     uranus: 4, belt: 5, neptune: 6,
+
+    /* constellations — first stop at/after the earliest credible record.
+       Omitted ids default to 0: the Ptolemaic 48 rest on Babylonian,
+       Greek, and Egyptian records, and Crux/Carina/Vela/Puppis were
+       catalogued in antiquity within Centaurus and Argo Navis. */
+    // Plancius 1592 + the Keyser & de Houtman twelve, 1598 (Bayer 1603)
+    columba: 2, apus: 2, chamaeleon: 2, dorado: 2, grus: 2, hydrus: 2,
+    indus: 2, musca: 2, pavo: 2, phoenix: 2, 'triangulum-australe': 2,
+    tucana: 2, volans: 2,
+    // Plancius 1612–13
+    camelopardalis: 3, monoceros: 3,
+    // Hevelius 1684–87
+    scutum: 4, lacerta: 4, vulpecula: 4, 'canes-venatici': 4,
+    'leo-minor': 4, lynx: 4, sextans: 4,
+    // Lacaille 1751–54
+    antlia: 4, caelum: 4, circinus: 4, fornax: 4, horologium: 4,
+    mensa: 4, microscopium: 4, norma: 4, octans: 4, pictor: 4,
+    pyxis: 4, reticulum: 4, sculptor: 4, telescopium: 4,
   };
 
   let currentStop = TIMELINE_STOPS.length - 1;
@@ -533,6 +551,7 @@
       lastPinchDist = Math.hypot(a.x - b.x, a.y - b.y);
     }
     dismissHint();
+    dismissMasthead();
   });
 
   canvas.addEventListener('pointermove', (e) => {
@@ -605,6 +624,7 @@
     zoomAbout(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0014));
     following = null;
     dismissHint();
+    dismissMasthead();
   }, { passive: false });
 
   function hitTest(sx, sy) {
@@ -639,6 +659,7 @@
     }
     if (!best && showConstellations) {
       for (const c of CONSTS) {
+        if (isGhost(c)) continue;
         const s = toScreen(c.x, c.y);
         const d = Math.hypot(sx - s.x, sy - s.y);
         if (d < Math.max(c.r * cam.zoom, 18) && d < bestDist) {
@@ -675,10 +696,12 @@
   document.getElementById('zoom-in').addEventListener('click', () => {
     zoomAbout(W / 2, H / 2, 1.6);
     dismissHint();
+    dismissMasthead();
   });
   document.getElementById('zoom-out').addEventListener('click', () => {
     zoomAbout(W / 2, H / 2, 1 / 1.6);
     dismissHint();
+    dismissMasthead();
   });
   document.getElementById('reset-view').addEventListener('click', resetView);
 
@@ -689,29 +712,77 @@
     }
   });
 
-  /* ---- settings toggles ---- */
+  /* ---- settings toggles ----
+     Each setting can have several switch instances (desktop card,
+     mobile menu overlay, mobile bottom bar) — all stay in sync. */
   const scaleHelper = document.getElementById('scale-helper');
 
-  function wireToggle(id, initial, onChange) {
-    const el = document.getElementById(id);
-    el.addEventListener('click', () => {
-      const on = el.getAttribute('aria-checked') !== 'true';
-      el.setAttribute('aria-checked', String(on));
-      el.classList.toggle('is-on', on);
-      onChange(on);
-    });
-    el.setAttribute('aria-checked', String(initial));
-    el.classList.toggle('is-on', initial);
+  function wireToggle(setting, initial, onChange) {
+    const els = [...document.querySelectorAll(`[data-setting="${setting}"]`)];
+    let on = initial;
+    const render = () => {
+      for (const el of els) {
+        el.setAttribute('aria-checked', String(on));
+        el.classList.toggle('is-on', on);
+      }
+    };
+    for (const el of els) {
+      el.addEventListener('click', () => {
+        on = !on;
+        render();
+        onChange(on);
+      });
+    }
+    render();
   }
 
-  wireToggle('toggle-scale', false, (on) => {
+  wireToggle('scale', false, (on) => {
     scaleState.target = on ? 1 : 0;
     scaleHelper.classList.toggle('is-visible', on);
     dismissHint();
   });
 
-  wireToggle('toggle-constellations', false, (on) => {
+  wireToggle('constellations', false, (on) => {
     showConstellations = on;
+  });
+
+  /* ---- mobile chrome: masthead dismissal, menu, timeline drawer ---- */
+  const mobileQuery = matchMedia('(max-width: 767px)');
+  const masthead = document.querySelector('.masthead');
+  const menuBtn = document.getElementById('menu-btn');
+  const menuOverlay = document.getElementById('menu-overlay');
+  const timelineBtn = document.getElementById('timeline-btn');
+  const timelineEl = document.getElementById('timeline');
+
+  let mastheadDismissed = false;
+  function dismissMasthead() {
+    if (mastheadDismissed || !mobileQuery.matches) return;
+    mastheadDismissed = true;
+    masthead.classList.add('is-dismissed');
+    menuBtn.classList.add('is-visible');
+  }
+
+  function setMenuOpen(open) {
+    menuOverlay.classList.toggle('is-open', open);
+    menuOverlay.setAttribute('aria-hidden', String(!open));
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  menuBtn.addEventListener('click', () => {
+    setMenuOpen(!menuOverlay.classList.contains('is-open'));
+  });
+
+  // tapping anywhere outside the open overlay (canvas included) closes it
+  document.addEventListener('pointerdown', (e) => {
+    if (!menuOverlay.classList.contains('is-open')) return;
+    if (menuOverlay.contains(e.target) || menuBtn.contains(e.target)) return;
+    setMenuOpen(false);
+  });
+
+  timelineBtn.addEventListener('click', () => {
+    const open = !timelineEl.classList.contains('is-open');
+    timelineEl.classList.toggle('is-open', open);
+    timelineBtn.setAttribute('aria-expanded', String(open));
   });
 
   /* ---- discovery timeline ---- */
@@ -727,6 +798,7 @@
     const pct = (i / (STOP_COUNT - 1)) * 100;
     const tick = document.createElement('span');
     tick.style.left = pct + '%';
+    tick.style.setProperty('--pct', pct + '%'); // mobile vertical track
     timelineTicks.appendChild(tick);
     const label = document.createElement('span');
     label.textContent = stop.label;
@@ -739,6 +811,7 @@
     const pct = (currentStop / (STOP_COUNT - 1)) * 100;
     timelineFill.style.width = pct + '%';
     timelineThumb.style.left = pct + '%';
+    timelineEl.style.setProperty('--timeline-pct', pct + '%'); // mobile vertical track
     timelineCaption.textContent = stop.caption;
     timelineTrack.setAttribute('aria-valuenow', String(currentStop));
     timelineTrack.setAttribute('aria-valuetext', stop.label);
@@ -749,8 +822,11 @@
   }
 
   function seekFromEvent(e) {
+    // the mobile drawer runs the track vertically; scrub along its long axis
     const rect = timelineTrack.getBoundingClientRect();
-    const t = clamp01((e.clientX - rect.left) / rect.width);
+    const t = rect.height > rect.width
+      ? clamp01((e.clientY - rect.top) / rect.height)
+      : clamp01((e.clientX - rect.left) / rect.width);
     applyStop(Math.round(t * (STOP_COUNT - 1)));
   }
 
@@ -780,16 +856,23 @@
 
   /* ---- drawing ---- */
   function drawStars(t) {
+    ctx.fillStyle = '#e2e8f0';
     for (const layer of STAR_LAYERS) {
       const ox = -cam.x * cam.zoom * layer.parallax;
       const oy = -cam.y * cam.zoom * layer.parallax;
       for (const s of layer.stars) {
         const x = ((s.x * W + ox) % W + W) % W;
         const y = ((s.y * H + oy) % H + H) % H;
-        const twinkle = reducedMotion ? 0 : Math.sin(t * s.speed + s.phase) * 0.15;
+        // two incommensurate sines per star: an irregular atmospheric
+        // shimmer rather than a rhythmic blink; phase/speed stagger
+        // keeps neighbors out of sync
+        const twinkle = reducedMotion ? 0 : (
+          Math.sin(t * s.speed + s.phase) * 0.7 +
+          Math.sin(t * s.speed * 2.7 + s.phase * 1.7) * 0.3
+        ) * 0.22;
         ctx.globalAlpha = Math.max(0.05, s.base + twinkle);
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(x, y, layer.size, layer.size);
+        const size = layer.size * (1 + twinkle * 0.6);
+        ctx.fillRect(x - size / 2, y - size / 2, size, size);
       }
     }
     ctx.globalAlpha = 1;
@@ -807,9 +890,13 @@
       const s = toScreen(c.x - c.size / 2, c.y - c.size / 2);
       const size = c.size * cam.zoom;
       if (s.x > W + 80 || s.y > H + 80 || s.x + size < -80 || s.y + size < -120) continue;
-      const active = hovered === c || selected === c;
+      const ghost = isGhost(c);
+      const active = !ghost && (hovered === c || selected === c);
 
-      ctx.strokeStyle = `rgba(20, 184, 166, ${active ? 0.65 : 0.30})`;
+      // undocumented at this timeline stop — present, but unknown
+      ctx.strokeStyle = ghost
+        ? 'rgba(20, 184, 166, 0.06)'
+        : `rgba(20, 184, 166, ${active ? 0.65 : 0.30})`;
       ctx.beginPath();
       for (const [a, b] of c.lines) {
         ctx.moveTo(s.x + c.stars[a][0] * size, s.y + c.stars[a][1] * size);
@@ -817,13 +904,17 @@
       }
       ctx.stroke();
 
-      ctx.fillStyle = `rgba(226, 232, 240, ${active ? 1 : 0.90})`;
+      ctx.fillStyle = ghost
+        ? 'rgba(226, 232, 240, 0.15)'
+        : `rgba(226, 232, 240, ${active ? 1 : 0.90})`;
       const starScale = Math.min(1.6, Math.max(0.7, size / 220));
       for (const [x, y, m] of c.stars) {
         ctx.beginPath();
         ctx.arc(s.x + x * size, s.y + y * size, (m || 1.4) * starScale, 0, Math.PI * 2);
         ctx.fill();
       }
+
+      if (ghost) continue; // no selection ring or label until documented
 
       if (selected === c) {
         ctx.beginPath();
