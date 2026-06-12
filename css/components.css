@@ -286,6 +286,9 @@ body {
   position: relative;
   height: 20px;
   cursor: pointer;
+  /* keep the browser from claiming touch drags for scrolling —
+     without this, touch scrubbing dies in a pointercancel */
+  touch-action: none;
 }
 
 .timeline-track::before {
@@ -668,8 +671,23 @@ body {
 /* ---- mobile-only chrome: hidden everywhere, enabled under 768px ---- */
 .menu-btn,
 .menu-overlay,
-.mobile-bar {
+.timeline-btn {
   display: none;
+}
+
+/* hint verb: "Click" with a pointer, "Tap" on touch-sized viewports */
+.hint .word-tap {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .hint .word-click {
+    display: none;
+  }
+
+  .hint .word-tap {
+    display: inline;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -775,37 +793,14 @@ body {
     margin-top: var(--cosmic-spacing-sm);
   }
 
-  /* bottom bar: persistent toggles + TIMELINE button */
-  .mobile-bar {
+  /* TIMELINE pill, bottom right (mirrors the MENU pill) */
+  .timeline-btn {
     position: fixed;
-    left: var(--cosmic-spacing-lg);
     right: var(--cosmic-spacing-lg);
     bottom: var(--cosmic-spacing-lg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--cosmic-spacing-sm);
-    padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-md);
+    display: block;
+    padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-lg);
     border-radius: var(--cosmic-radius-full);
-  }
-
-  .mobile-bar-item {
-    display: flex;
-    align-items: center;
-    gap: var(--cosmic-spacing-sm);
-  }
-
-  .mobile-bar .toggle-label {
-    font: var(--cosmic-type-caption);
-    color: var(--cosmic-text-neutral-secondary);
-    white-space: nowrap;
-  }
-
-  .bar-btn {
-    background: none;
-    border: none;
-    padding: var(--cosmic-spacing-xs) var(--cosmic-spacing-sm);
-    border-radius: var(--cosmic-radius-xs);
     font: var(--cosmic-type-caption);
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -814,18 +809,30 @@ body {
     cursor: pointer;
   }
 
-  .bar-btn:focus-visible {
+  .timeline-btn:focus-visible {
     outline: none;
     box-shadow: var(--cosmic-effect-focus-lime);
   }
 
-  /* zoom controls and hint clear the bottom bar */
+  /* zoom controls become a horizontal row so the hint clears them */
   .controls {
-    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-md) + var(--cosmic-spacing-sm));
+    flex-direction: row;
   }
 
+  .controls .divider {
+    width: 1px;
+    height: auto;
+    margin: var(--cosmic-spacing-xs) 0;
+  }
+
+  /* hint: full-width frame above the controls row and TIMELINE pill */
   .hint {
-    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-lg));
+    left: var(--cosmic-spacing-lg);
+    right: var(--cosmic-spacing-lg);
+    transform: none;
+    text-align: center;
+    border-radius: var(--cosmic-radius-lg);
+    bottom: calc(var(--cosmic-spacing-lg) + 56px + var(--cosmic-spacing-md));
   }
 
   /* discovery timeline: vertical drawer sliding in from the right edge */
@@ -833,8 +840,8 @@ body {
     left: auto;
     right: 0;
     top: calc(var(--cosmic-spacing-lg) + 44px + var(--cosmic-spacing-md));
-    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-xl));
-    width: 148px;
+    bottom: calc(var(--cosmic-spacing-lg) + 36px + var(--cosmic-spacing-md));
+    width: 160px;
     flex-direction: row;
     gap: var(--cosmic-spacing-md);
     padding: var(--cosmic-spacing-lg) var(--cosmic-spacing-md);
@@ -856,15 +863,16 @@ body {
     display: none;
   }
 
+  /* a 32px-wide touch target; the visible 4px line runs up its center */
   .timeline-track {
     height: auto;
-    width: 20px;
+    width: 32px;
     flex: none;
     align-self: stretch;
   }
 
   .timeline-track::before {
-    left: 8px;
+    left: 14px;
     right: auto;
     top: 0;
     bottom: 0;
@@ -875,7 +883,7 @@ body {
   /* inline width/left styles drive the horizontal desktop track;
      the vertical drawer positions via the --timeline-pct/--pct vars */
   .timeline-fill {
-    left: 8px;
+    left: 14px;
     top: 0;
     width: 4px !important;
     height: var(--timeline-pct, 100%);
@@ -883,14 +891,14 @@ body {
   }
 
   .timeline-thumb {
-    left: 10px !important;
+    left: 16px !important;
     top: var(--timeline-pct, 100%);
     margin-top: -8px;
     transition: top 240ms ease;
   }
 
   .timeline-ticks span {
-    left: 10px !important;
+    left: 16px !important;
     top: var(--pct, 0%);
     margin-top: -3px;
   }

@@ -61,7 +61,7 @@
   </nav>
 
   <div class="hint glass-panel" id="hint">
-    <span class="key">Scroll</span> to zoom<span class="sep">·</span><span class="key">Drag</span> to pan<span class="sep">·</span><span class="key">Click</span> a planet to approach
+    <span class="key">Scroll</span> to zoom<span class="sep">·</span><span class="key">Drag</span> to pan<span class="sep">·</span><span class="key"><span class="word-click">Click</span><span class="word-tap">Tap</span></span> a planet to approach
   </div>
 
   <section class="settings glass-panel" aria-label="Display settings">
@@ -138,21 +138,7 @@
     </div>
   </section>
 
-  <div class="mobile-bar glass-panel" id="mobile-bar">
-    <span class="mobile-bar-item">
-      <span class="toggle-label">True scale</span>
-      <button class="toggle-switch" data-setting="scale" role="switch" aria-checked="false" aria-label="True relative scale">
-        <span class="knob"></span>
-      </button>
-    </span>
-    <span class="mobile-bar-item">
-      <span class="toggle-label">Constellations</span>
-      <button class="toggle-switch" data-setting="constellations" role="switch" aria-checked="false" aria-label="Constellation overlay">
-        <span class="knob"></span>
-      </button>
-    </span>
-    <button class="bar-btn" id="timeline-btn" aria-expanded="false" aria-controls="timeline">Timeline</button>
-  </div>
+  <button class="timeline-btn glass-panel" id="timeline-btn" aria-expanded="false" aria-controls="timeline">Timeline</button>
 
   <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="false" aria-labelledby="panel-name" aria-hidden="true">
     <button class="control-btn panel-close" id="panel-close" aria-label="Close detail panel" title="Close">
