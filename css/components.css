@@ -793,7 +793,7 @@ body {
     margin-top: var(--cosmic-spacing-sm);
   }
 
-  /* bottom bar: persistent toggles, TIMELINE rightmost */
+  /* bottom bar: TIMELINE button, rightmost */
   .mobile-bar {
     position: fixed;
     left: var(--cosmic-spacing-lg);
@@ -801,22 +801,10 @@ body {
     bottom: var(--cosmic-spacing-lg);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--cosmic-spacing-sm);
     padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-md);
     border-radius: var(--cosmic-radius-full);
-  }
-
-  .mobile-bar-item {
-    display: flex;
-    align-items: center;
-    gap: var(--cosmic-spacing-sm);
-  }
-
-  .mobile-bar .toggle-label {
-    font: var(--cosmic-type-caption);
-    color: var(--cosmic-text-neutral-secondary);
-    white-space: nowrap;
   }
 
   .bar-btn {
