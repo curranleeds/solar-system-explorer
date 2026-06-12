@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Explorer — Our Solar System</title>
+  <meta name="description" content="An interactive, museum-style tour of the solar system: orbiting planets, major moons, the asteroid belt, all 88 constellations, true-scale mode, and a discovery timeline." />
+  <meta property="og:title" content="Cosmic Explorer — Our Solar System" />
+  <meta property="og:description" content="Pan and zoom a living map of the solar system. Click any planet, moon, or constellation for its story." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://curranleeds.github.io/solar-system-explorer/" />
+  <meta property="og:image" content="https://curranleeds.github.io/solar-system-explorer/og-image.jpg" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <canvas id="scene" aria-label="Interactive map of the solar system"></canvas>
+
+  <header class="masthead glass-panel">
+    <span class="eyebrow">ELE Cosmic Design System</span>
+    <h1>Cosmic Explorer</h1>
+    <p>An interactive tour of our solar system. Select a world to draw closer — or turn on Constellations and click any of the 88 star figures for its story.</p>
+    <a class="masthead-link" href="https://github.com/curranleeds/solar-system-explorer" target="_blank" rel="noopener">
+      View source
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4.5 2.5h5v5" />
+        <path d="M9.5 2.5 3 9" />
+      </svg>
+    </a>
+  </header>
+
+  <nav class="controls glass-panel" aria-label="View controls">
+    <button class="control-btn" id="zoom-in" aria-label="Zoom in" title="Zoom in">
+      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <line x1="9" y1="3.5" x2="9" y2="14.5" />
+        <line x1="3.5" y1="9" x2="14.5" y2="9" />
+      </svg>
+    </button>
+    <button class="control-btn" id="zoom-out" aria-label="Zoom out" title="Zoom out">
+      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <line x1="3.5" y1="9" x2="14.5" y2="9" />
+      </svg>
+    </button>
+    <div class="divider" role="presentation"></div>
+    <button class="control-btn" id="reset-view" aria-label="Reset view" title="Reset view">
+      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6.5 2.5 2.5 2.5 2.5 6.5" />
+        <polyline points="11.5 2.5 15.5 2.5 15.5 6.5" />
+        <polyline points="6.5 15.5 2.5 15.5 2.5 11.5" />
+        <polyline points="11.5 15.5 15.5 15.5 15.5 11.5" />
+      </svg>
+    </button>
+  </nav>
+
+  <div class="hint glass-panel" id="hint">
+    <span class="key">Scroll</span> to zoom<span class="sep">·</span><span class="key">Drag</span> to pan<span class="sep">·</span><span class="key">Click</span> a planet to approach
+  </div>
+
+  <section class="settings glass-panel" aria-label="Display settings">
+    <div class="toggle-row">
+      <span class="toggle-text">
+        <span class="toggle-label">True scale</span>
+        <span class="toggle-desc">One scale for sizes and distances</span>
+      </span>
+      <button class="toggle-switch" id="toggle-scale" role="switch" aria-checked="false" aria-label="True relative scale">
+        <span class="knob"></span>
+      </button>
+    </div>
+    <p class="scale-helper" id="scale-helper">
+      Sizes and distances now share one true scale. The Sun is 1.4 million km
+      wide — and still barely a dot. Small markers keep the planets findable.
+    </p>
+    <div class="toggle-row">
+      <span class="toggle-text">
+        <span class="toggle-label">Constellations</span>
+        <span class="toggle-desc">Star patterns and labels</span>
+      </span>
+      <button class="toggle-switch" id="toggle-constellations" role="switch" aria-checked="false" aria-label="Constellation overlay">
+        <span class="knob"></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="timeline glass-panel" id="timeline" aria-label="Discovery timeline">
+    <div class="timeline-head">
+      <span class="timeline-title">Discovery Timeline</span>
+      <span class="timeline-caption" id="timeline-caption"></span>
+    </div>
+    <div class="timeline-track" id="timeline-track" role="slider" tabindex="0"
+         aria-label="Scrub through discovery history" aria-valuemin="0" aria-valuemax="7" aria-valuenow="7">
+      <div class="timeline-fill" id="timeline-fill"></div>
+      <div class="timeline-ticks" id="timeline-ticks"></div>
+      <div class="timeline-thumb" id="timeline-thumb"></div>
+    </div>
+    <div class="timeline-labels" id="timeline-labels"></div>
+  </section>
+
+  <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="false" aria-labelledby="panel-name" aria-hidden="true">
+    <button class="control-btn panel-close" id="panel-close" aria-label="Close detail panel" title="Close">
+      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <line x1="4.5" y1="4.5" x2="13.5" y2="13.5" />
+        <line x1="13.5" y1="4.5" x2="4.5" y2="13.5" />
+      </svg>
+    </button>
+    <div class="panel-scroll" id="panel-scroll"></div>
+  </aside>
+
+  <script src="js/content.js"></script>
+  <script src="js/moons.js"></script>
+  <script src="js/constellations.js"></script>
+  <script src="js/constellation-content.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

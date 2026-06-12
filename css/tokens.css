@@ -1,0 +1,167 @@
+/* ============================================================
+   ELE Cosmic Design System — Token Layer
+   Mode: Deep Space (dark glass-morphism)
+   Source: 01_tokens/tokens-reference.md (2026-05-01)
+   ============================================================ */
+
+:root {
+  /* ---- surface/ ---- */
+  --cosmic-surface-neutral-base: #0b1221;
+  --cosmic-surface-neutral-dim: #020408;
+  --cosmic-surface-neutral-container: #111d33;
+  --cosmic-surface-neutral-container-high: #1e293b;
+  --cosmic-surface-neutral-container-highest: #293548;
+  --cosmic-surface-neutral-hover: rgba(255, 255, 255, 0.06);
+  --cosmic-surface-neutral-pressed: rgba(255, 255, 255, 0.10);
+  --cosmic-surface-neutral-selected: rgba(255, 255, 255, 0.08);
+  --cosmic-surface-neutral-disabled: rgba(255, 255, 255, 0.04);
+  --cosmic-surface-brand-primary-subtle: rgba(205, 222, 0, 0.08);
+  --cosmic-surface-brand-primary-container: rgba(205, 222, 0, 0.12);
+  --cosmic-surface-brand-secondary-subtle: rgba(188, 71, 0, 0.08);
+  --cosmic-surface-brand-tertiary-subtle: rgba(20, 184, 166, 0.08);
+  --cosmic-surface-brand-alert-subtle: rgba(159, 18, 57, 0.08);
+
+  /* ---- text/ ---- */
+  --cosmic-text-neutral-primary: #ffffff;
+  --cosmic-text-neutral-secondary: #cbd5e1;
+  --cosmic-text-neutral-disabled: #64748b;
+  --cosmic-text-neutral-inverse: #0f172a;
+  --cosmic-text-brand-primary: #cdde00;
+  --cosmic-text-brand-lime: #cdde00;
+  --cosmic-text-brand-on-primary: #020408;
+  --cosmic-text-brand-secondary: #bc4700;
+  --cosmic-text-brand-orange: #bc4700;
+  --cosmic-text-brand-tertiary: #14b8a6;
+  --cosmic-text-brand-teal: #14b8a6;
+  --cosmic-text-brand-alert: #9f1239;
+  --cosmic-text-brand-red: #9f1239;
+
+  /* ---- interactive/ ---- */
+  --cosmic-interactive-primary: #cdde00;
+  --cosmic-interactive-primary-hover: #a8b600;
+  --cosmic-interactive-primary-pressed: #808a00;
+  --cosmic-interactive-secondary: #bc4700;
+  --cosmic-interactive-tertiary: #14b8a6;
+  --cosmic-interactive-alert: #9f1239;
+
+  /* ---- border/ ---- */
+  --cosmic-border-neutral-default: rgba(255, 255, 255, 0.08);
+  --cosmic-border-neutral-strong: rgba(255, 255, 255, 0.12);
+  --cosmic-border-neutral-hover: rgba(255, 255, 255, 0.20);
+  --cosmic-border-neutral-pressed: rgba(255, 255, 255, 0.28);
+  --cosmic-border-neutral-disabled: rgba(255, 255, 255, 0.04);
+  --cosmic-border-brand-focus: #cdde00;
+  --cosmic-border-brand-primary: rgba(205, 222, 0, 0.30);
+  --cosmic-border-brand-error: #9f1239;
+  --cosmic-border-brand-warning: rgba(188, 71, 0, 0.40);
+  --cosmic-border-brand-info: rgba(20, 184, 166, 0.40);
+
+  /* ---- icon/ ---- */
+  --cosmic-icon-neutral-primary: #ffffff;
+  --cosmic-icon-neutral-secondary: #cbd5e1;
+  --cosmic-icon-neutral-disabled: #64748b;
+  --cosmic-icon-neutral-inverse: #0f172a;
+  --cosmic-icon-brand-primary: #cdde00;
+  --cosmic-icon-brand-lime: #cdde00;
+  --cosmic-icon-brand-on-primary: #020408;
+  --cosmic-icon-brand-secondary: #bc4700;
+  --cosmic-icon-brand-orange: #bc4700;
+  --cosmic-icon-brand-tertiary: #14b8a6;
+  --cosmic-icon-brand-teal: #14b8a6;
+  --cosmic-icon-brand-alert: #9f1239;
+  --cosmic-icon-brand-red: #9f1239;
+
+  /* ---- badge/ ---- */
+  --cosmic-badge-lime-background: rgba(205, 222, 0, 0.12);
+  --cosmic-badge-lime-border: rgba(205, 222, 0, 0.30);
+  --cosmic-badge-lime-text: #cdde00;
+  --cosmic-badge-orange-background: rgba(188, 71, 0, 0.12);
+  --cosmic-badge-orange-border: rgba(188, 71, 0, 0.30);
+  --cosmic-badge-orange-text: #bc4700;
+  --cosmic-badge-teal-background: rgba(20, 184, 166, 0.12);
+  --cosmic-badge-teal-border: rgba(20, 184, 166, 0.30);
+  --cosmic-badge-teal-text: #14b8a6;
+  --cosmic-badge-red-background: rgba(159, 18, 57, 0.12);
+  --cosmic-badge-red-border: rgba(159, 18, 57, 0.30);
+  --cosmic-badge-red-text: #9f1239;
+  --cosmic-badge-gray-background: rgba(255, 255, 255, 0.08);
+  --cosmic-badge-gray-border: rgba(255, 255, 255, 0.20);
+  --cosmic-badge-gray-text: #cbd5e1;
+
+  /* ---- feedback/ ---- */
+  --cosmic-feedback-success-surface: rgba(205, 222, 0, 0.08);
+  --cosmic-feedback-success-border: rgba(205, 222, 0, 0.30);
+  --cosmic-feedback-success-text: #cdde00;
+  --cosmic-feedback-warning-surface: rgba(188, 71, 0, 0.08);
+  --cosmic-feedback-warning-border: rgba(188, 71, 0, 0.30);
+  --cosmic-feedback-warning-text: #bc4700;
+  --cosmic-feedback-error-surface: rgba(159, 18, 57, 0.08);
+  --cosmic-feedback-error-border: #9f1239;
+  --cosmic-feedback-error-text: #9f1239;
+  --cosmic-feedback-info-surface: rgba(20, 184, 166, 0.08);
+  --cosmic-feedback-info-border: rgba(20, 184, 166, 0.30);
+  --cosmic-feedback-info-text: #14b8a6;
+
+  /* ---- overlay/ ---- */
+  --cosmic-overlay-scrim: rgba(15, 23, 42, 0.50);
+
+  /* ---- spacing/ ---- */
+  --cosmic-spacing-xs: 4px;
+  --cosmic-spacing-sm: 8px;
+  --cosmic-spacing-md: 12px;
+  --cosmic-spacing-lg: 16px;
+  --cosmic-spacing-xl: 24px;
+  --cosmic-spacing-2xl: 32px;
+  --cosmic-spacing-3xl: 48px;
+  --cosmic-spacing-4xl: 64px;
+
+  /* ---- radius/ ---- */
+  --cosmic-radius-xs: 4px;
+  --cosmic-radius-sm: 8px;
+  --cosmic-radius-md: 12px;
+  --cosmic-radius-lg: 16px;
+  --cosmic-radius-xl: 24px;
+  --cosmic-radius-full: 9999px;
+
+  /* ---- typography (Montserrat, 8dp baseline) ---- */
+  --cosmic-font-family: 'Montserrat', system-ui, sans-serif;
+  --cosmic-type-display: 100 72px/80px var(--cosmic-font-family);
+  --cosmic-type-h1: 300 48px/56px var(--cosmic-font-family);
+  --cosmic-type-h2: 400 36px/44px var(--cosmic-font-family);
+  --cosmic-type-h3: 500 24px/32px var(--cosmic-font-family);
+  --cosmic-type-body: 400 16px/24px var(--cosmic-font-family);
+  --cosmic-type-label: 500 14px/20px var(--cosmic-font-family);
+  --cosmic-type-caption: 400 12px/16px var(--cosmic-font-family);
+
+  /* ---- effect styles (Dark/ family, CSS equivalents) ---- */
+  --cosmic-effect-glass-standard:
+    0 8px 32px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --cosmic-effect-glass-active-lime:
+    0 0 40px rgba(205, 222, 0, 0.10),
+    0 8px 32px rgba(0, 0, 0, 0.40);
+  --cosmic-effect-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.60);
+  --cosmic-effect-button-default: 0 4px 12px rgba(205, 222, 0, 0.25);
+  --cosmic-effect-button-hover: 0 6px 20px rgba(205, 222, 0, 0.40);
+  --cosmic-effect-focus-lime: 0 0 0 3px rgba(205, 222, 0, 0.50);
+  --cosmic-effect-glow-lime:
+    0 0 20px rgba(205, 222, 0, 0.60),
+    0 0 40px rgba(205, 222, 0, 0.30);
+  --cosmic-effect-glow-orange:
+    0 0 20px rgba(188, 71, 0, 0.60),
+    0 0 40px rgba(188, 71, 0, 0.30);
+  --cosmic-effect-glow-teal:
+    0 0 20px rgba(20, 184, 166, 0.60),
+    0 0 40px rgba(20, 184, 166, 0.30);
+  --cosmic-effect-glow-red:
+    0 0 20px rgba(159, 18, 57, 0.60),
+    0 0 40px rgba(159, 18, 57, 0.30);
+  --cosmic-effect-glow-progress-lime: 0 2px 8px rgba(205, 222, 0, 0.40);
+
+  /* ---- glass blur (CSS implementation layer only) ---- */
+  --cosmic-blur-glass: 16px;
+  --cosmic-blur-glass-large: 20px;
+
+  /* ---- glass fill: container at 40% layer opacity ---- */
+  --cosmic-glass-fill: rgba(17, 29, 51, 0.40);
+}
