@@ -95,4 +95,4 @@ If the repository is ever renamed or moved, update the `og:url` and `og:image` a
 
 ---
 
-Built with the ELE Cosmic Design System — Relevate Health.
+Built with the Cosmic Design System.
