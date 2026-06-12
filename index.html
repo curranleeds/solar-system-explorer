@@ -17,8 +17,8 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/tokens.css?v=2" />
+  <link rel="stylesheet" href="css/components.css?v=2" />
 </head>
 <body>
   <canvas id="scene" aria-label="Interactive map of the solar system"></canvas>
@@ -138,7 +138,21 @@
     </div>
   </section>
 
-  <button class="timeline-btn glass-panel" id="timeline-btn" aria-expanded="false" aria-controls="timeline">Timeline</button>
+  <div class="mobile-bar glass-panel" id="mobile-bar">
+    <span class="mobile-bar-item">
+      <span class="toggle-label">True scale</span>
+      <button class="toggle-switch" data-setting="scale" role="switch" aria-checked="false" aria-label="True relative scale">
+        <span class="knob"></span>
+      </button>
+    </span>
+    <span class="mobile-bar-item">
+      <span class="toggle-label">Constellations</span>
+      <button class="toggle-switch" data-setting="constellations" role="switch" aria-checked="false" aria-label="Constellation overlay">
+        <span class="knob"></span>
+      </button>
+    </span>
+    <button class="bar-btn" id="timeline-btn" aria-expanded="false" aria-controls="timeline">Timeline</button>
+  </div>
 
   <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="false" aria-labelledby="panel-name" aria-hidden="true">
     <button class="control-btn panel-close" id="panel-close" aria-label="Close detail panel" title="Close">
@@ -150,10 +164,10 @@
     <div class="panel-scroll" id="panel-scroll"></div>
   </aside>
 
-  <script src="js/content.js"></script>
-  <script src="js/moons.js"></script>
-  <script src="js/constellations.js"></script>
-  <script src="js/constellation-content.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/content.js?v=2"></script>
+  <script src="js/moons.js?v=2"></script>
+  <script src="js/constellations.js?v=2"></script>
+  <script src="js/constellation-content.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 </html>

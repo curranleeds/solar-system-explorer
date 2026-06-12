@@ -671,7 +671,7 @@ body {
 /* ---- mobile-only chrome: hidden everywhere, enabled under 768px ---- */
 .menu-btn,
 .menu-overlay,
-.timeline-btn {
+.mobile-bar {
   display: none;
 }
 
@@ -793,14 +793,37 @@ body {
     margin-top: var(--cosmic-spacing-sm);
   }
 
-  /* TIMELINE pill, bottom right (mirrors the MENU pill) */
-  .timeline-btn {
+  /* bottom bar: persistent toggles, TIMELINE rightmost */
+  .mobile-bar {
     position: fixed;
+    left: var(--cosmic-spacing-lg);
     right: var(--cosmic-spacing-lg);
     bottom: var(--cosmic-spacing-lg);
-    display: block;
-    padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cosmic-spacing-sm);
+    padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-md);
     border-radius: var(--cosmic-radius-full);
+  }
+
+  .mobile-bar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--cosmic-spacing-sm);
+  }
+
+  .mobile-bar .toggle-label {
+    font: var(--cosmic-type-caption);
+    color: var(--cosmic-text-neutral-secondary);
+    white-space: nowrap;
+  }
+
+  .bar-btn {
+    background: none;
+    border: none;
+    padding: var(--cosmic-spacing-xs) var(--cosmic-spacing-sm);
+    border-radius: var(--cosmic-radius-xs);
     font: var(--cosmic-type-caption);
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -809,30 +832,24 @@ body {
     cursor: pointer;
   }
 
-  .timeline-btn:focus-visible {
+  .bar-btn:focus-visible {
     outline: none;
     box-shadow: var(--cosmic-effect-focus-lime);
   }
 
-  /* zoom controls become a horizontal row so the hint clears them */
+  /* zoom controls clear the bottom bar */
   .controls {
-    flex-direction: row;
+    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-md) + var(--cosmic-spacing-sm));
   }
 
-  .controls .divider {
-    width: 1px;
-    height: auto;
-    margin: var(--cosmic-spacing-xs) 0;
-  }
-
-  /* hint: full-width frame above the controls row and TIMELINE pill */
+  /* hint: wide frame above the bar, inset to clear the controls column */
   .hint {
-    left: var(--cosmic-spacing-lg);
+    left: calc(var(--cosmic-spacing-lg) + 56px + var(--cosmic-spacing-lg));
     right: var(--cosmic-spacing-lg);
     transform: none;
     text-align: center;
     border-radius: var(--cosmic-radius-lg);
-    bottom: calc(var(--cosmic-spacing-lg) + 56px + var(--cosmic-spacing-md));
+    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-lg));
   }
 
   /* discovery timeline: vertical drawer sliding in from the right edge */
@@ -840,7 +857,7 @@ body {
     left: auto;
     right: 0;
     top: calc(var(--cosmic-spacing-lg) + 44px + var(--cosmic-spacing-md));
-    bottom: calc(var(--cosmic-spacing-lg) + 36px + var(--cosmic-spacing-md));
+    bottom: calc(var(--cosmic-spacing-lg) + 40px + var(--cosmic-spacing-xl));
     width: 160px;
     flex-direction: row;
     gap: var(--cosmic-spacing-md);

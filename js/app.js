@@ -843,6 +843,11 @@
   });
   timelineTrack.addEventListener('pointerup', () => { scrubbing = false; });
   timelineTrack.addEventListener('pointercancel', () => { scrubbing = false; });
+  // backstop to touch-action: none — never let the browser turn an
+  // active scrub into a page scroll/gesture
+  timelineTrack.addEventListener('touchmove', (e) => {
+    if (scrubbing) e.preventDefault();
+  }, { passive: false });
   timelineTrack.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') applyStop(currentStop + 1);
     else if (e.key === 'ArrowLeft') applyStop(currentStop - 1);
