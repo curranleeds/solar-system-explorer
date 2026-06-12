@@ -49,11 +49,20 @@ body {
   -webkit-backdrop-filter: blur(var(--cosmic-blur-glass));
 }
 
-/* ---- masthead ---- */
-.masthead {
+/* ---- top-left HUD: masthead + settings stacked ---- */
+.hud-left {
   position: fixed;
   top: var(--cosmic-spacing-xl);
   left: var(--cosmic-spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--cosmic-spacing-xl);
+  pointer-events: none;
+}
+
+/* ---- masthead ---- */
+.masthead {
   padding: var(--cosmic-spacing-lg) var(--cosmic-spacing-xl);
   border-radius: var(--cosmic-radius-lg);
   backdrop-filter: blur(var(--cosmic-blur-glass-large));
@@ -167,9 +176,7 @@ body {
 
 /* ---- settings cluster (Toggle/Switch pattern) ---- */
 .settings {
-  position: fixed;
-  top: 184px;
-  left: var(--cosmic-spacing-xl);
+  pointer-events: auto;
   width: 248px;
   padding: var(--cosmic-spacing-md) var(--cosmic-spacing-lg);
   border-radius: var(--cosmic-radius-lg);
@@ -669,11 +676,15 @@ body {
 }
 
 @media (max-width: 767px) {
-  .masthead {
+  .hud-left {
     top: var(--cosmic-spacing-lg);
     left: var(--cosmic-spacing-lg);
     right: var(--cosmic-spacing-lg);
+  }
+
+  .masthead {
     max-width: none;
+    width: 100%;
   }
 
   .settings,
