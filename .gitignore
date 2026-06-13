@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Claude Code / local tooling
+.claude/
+
+# Preview staging (sandbox workaround; not part of the site)
+restage-preview.sh

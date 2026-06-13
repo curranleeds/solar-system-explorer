@@ -49,7 +49,7 @@ body {
   -webkit-backdrop-filter: blur(var(--cosmic-blur-glass));
 }
 
-/* ---- top-left HUD: masthead + settings stacked ---- */
+/* ---- top-left HUD: masthead + content layers stacked ---- */
 .hud-left {
   position: fixed;
   top: var(--cosmic-spacing-xl);
@@ -172,6 +172,150 @@ body {
 .control-btn svg {
   width: 18px;
   height: 18px;
+}
+
+/* ---- Environmental Settings button + popover card ---- */
+/* The controls panel is: padding-xs (4px) + 40px btn + padding-xs (4px) = 48px wide */
+.env-settings-wrap {
+  position: fixed;
+  bottom: var(--cosmic-spacing-xl);
+  left: calc(var(--cosmic-spacing-xl) + 48px + var(--cosmic-spacing-sm));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--cosmic-spacing-sm);
+}
+
+.env-settings-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--cosmic-spacing-sm);
+  padding: var(--cosmic-spacing-sm) var(--cosmic-spacing-md);
+  border-radius: var(--cosmic-radius-md);
+  border: none;
+  color: var(--cosmic-icon-neutral-secondary);
+  cursor: pointer;
+  font: var(--cosmic-type-label);
+  font-weight: 500;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.env-settings-btn:hover {
+  color: var(--cosmic-icon-neutral-primary);
+}
+
+.env-settings-btn[aria-expanded="true"] {
+  color: var(--cosmic-text-brand-primary);
+  background: var(--cosmic-surface-brand-primary-container);
+  border-color: var(--cosmic-border-brand-primary);
+}
+
+.env-settings-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--cosmic-effect-focus-lime);
+}
+
+.env-settings-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.env-settings-card {
+  position: absolute;
+  bottom: calc(100% + var(--cosmic-spacing-sm));
+  left: 0;
+  width: 260px;
+  padding: var(--cosmic-spacing-md) var(--cosmic-spacing-lg);
+  border-radius: var(--cosmic-radius-lg);
+  display: none;
+  flex-direction: column;
+  gap: var(--cosmic-spacing-md);
+  backdrop-filter: blur(var(--cosmic-blur-glass-large));
+  -webkit-backdrop-filter: blur(var(--cosmic-blur-glass-large));
+}
+
+.env-settings-card.is-open {
+  display: flex;
+}
+
+/* ---- Segmented control (orbit speed) ---- */
+.env-setting-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cosmic-spacing-xs);
+}
+
+.env-setting-label {
+  font: var(--cosmic-type-caption);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cosmic-text-neutral-disabled);
+}
+
+.seg-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--cosmic-surface-neutral-pressed);
+  border: 1px solid var(--cosmic-border-neutral-default);
+  border-radius: var(--cosmic-radius-sm);
+  padding: 2px;
+}
+
+.seg-control--full {
+  width: 100%;
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 5px var(--cosmic-spacing-xs);
+  border-radius: var(--cosmic-radius-xs);
+  border: none;
+  background: transparent;
+  color: var(--cosmic-text-neutral-secondary);
+  font: var(--cosmic-type-caption);
+  font-weight: 500;
+  font-family: var(--cosmic-font-family);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.seg-btn:hover {
+  color: var(--cosmic-text-neutral-primary);
+}
+
+.seg-btn.is-active {
+  background: var(--cosmic-surface-brand-primary-container);
+  color: var(--cosmic-text-brand-primary);
+}
+
+.seg-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--cosmic-effect-focus-lime);
+}
+
+.seg-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--cosmic-border-neutral-strong);
+  flex: none;
+  margin: 0 2px;
+}
+
+/* ---- Content Layers panel heading ---- */
+.panel-section-heading {
+  display: block;
+  font: var(--cosmic-type-caption);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cosmic-text-brand-primary);
+  margin-bottom: var(--cosmic-spacing-xs);
 }
 
 /* ---- settings cluster (Toggle/Switch pattern) ---- */
@@ -400,7 +544,6 @@ body {
   font: var(--cosmic-type-caption);
   color: var(--cosmic-text-neutral-disabled);
   margin-top: calc(-1 * var(--cosmic-spacing-xs));
-  padding-right: var(--cosmic-spacing-3xl);
 }
 
 .scale-helper.is-visible {
@@ -522,6 +665,22 @@ body {
 }
 
 /* ---- panel content ---- */
+/* full-bleed illustration banner at the top of the card */
+.panel-illustration {
+  margin: calc(-1 * var(--cosmic-spacing-xl)) calc(-1 * var(--cosmic-spacing-xl)) var(--cosmic-spacing-xl);
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  background: #05080f;
+  border-radius: var(--cosmic-radius-lg) var(--cosmic-radius-lg) 0 0;
+  border-bottom: 1px solid var(--cosmic-border-neutral-default);
+}
+
+.panel-illustration svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .panel-content .object-name {
   font: var(--cosmic-type-h1);
   margin-bottom: var(--cosmic-spacing-md);
@@ -668,7 +827,7 @@ body {
   padding-left: var(--cosmic-spacing-md);
 }
 
-/* ---- mobile-only chrome: hidden everywhere, enabled under 768px ---- */
+/* ---- mobile-only chrome: hidden everywhere, enabled under 1024px ---- */
 .menu-btn,
 .menu-overlay,
 .mobile-bar {
@@ -700,7 +859,7 @@ body {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .hud-left {
     top: var(--cosmic-spacing-lg);
     left: var(--cosmic-spacing-lg);
@@ -712,8 +871,13 @@ body {
     width: 100%;
   }
 
-  /* desktop settings card is replaced by the menu overlay + bottom bar */
+  /* desktop content layers panel replaced by the menu overlay */
   .settings {
+    display: none;
+  }
+
+  /* desktop env settings button + card replaced by menu overlay */
+  .env-settings-wrap {
     display: none;
   }
 
@@ -755,7 +919,7 @@ body {
     box-shadow: var(--cosmic-effect-focus-lime);
   }
 
-  /* menu overlay: masthead copy + source link + full toggle rows */
+  /* menu overlay: masthead copy + source link + all toggle rows */
   .menu-overlay {
     position: fixed;
     top: calc(var(--cosmic-spacing-lg) + 44px);
@@ -765,6 +929,10 @@ body {
     gap: var(--cosmic-spacing-md);
     padding: var(--cosmic-spacing-lg) var(--cosmic-spacing-xl);
     border-radius: var(--cosmic-radius-lg);
+    max-height: calc(100vh - var(--cosmic-spacing-lg) - 44px - var(--cosmic-spacing-lg));
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cosmic-border-neutral-strong) transparent;
   }
 
   .menu-overlay.is-open {
@@ -789,8 +957,26 @@ body {
     color: var(--cosmic-text-neutral-secondary);
   }
 
+  /* section headings inside the mobile overlay */
+  .menu-section-heading {
+    font: var(--cosmic-type-caption);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cosmic-text-brand-primary);
+    padding-top: var(--cosmic-spacing-sm);
+    border-top: 1px solid var(--cosmic-border-neutral-default);
+    margin-top: var(--cosmic-spacing-xs);
+  }
+
+  .menu-setting-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cosmic-spacing-xs);
+  }
+
   .menu-overlay .toggle-row {
-    margin-top: var(--cosmic-spacing-sm);
+    margin-top: 0;
   }
 
   /* bottom bar: TIMELINE button, rightmost */

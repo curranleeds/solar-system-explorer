@@ -32,6 +32,7 @@
     labelDim: 'rgba(148, 163, 184, 0.75)',
     lime: '#cdde00',
     belt: '203, 213, 225',
+    cometTail: '203, 213, 225', // --cosmic-text-neutral-secondary
   };
 
   const PLANETS = [
@@ -108,7 +109,7 @@
 
   function applyScaleBlend() {
     const t = smoothstep(scaleState.blend);
-    for (const p of [...PLANETS, SUN]) {
+    for (const p of [...PLANETS, ...DWARFS, SUN]) {
       p.r = Math.exp(lerp(Math.log(p.rNav), Math.log(p.rTrue), t));
       for (const m of p.moons || []) {
         m.r = Math.exp(lerp(Math.log(m.rNav), Math.log(m.rTrue), t));
@@ -163,6 +164,71 @@
   })();
 
   let showConstellations = false;
+  let showComets = false; // Historical Comets content layer
+
+  /* ---- historical comets: looped perihelion passes ----
+     Keplerian elements come from comets.js in AU; scale to world px
+     and pick randomized pass/gap timings so the sky is never always
+     empty nor always crowded. */
+  const COMETS = (window.COSMIC_COMETS || []).map((c) => {
+    const o = c.orbit;
+    const rand = (lo, hi) => lo + Math.random() * (hi - lo);
+    const pass = rand(c.anim.pass[0], c.anim.pass[1]);
+    const gap = rand(c.anim.gap[0], c.anim.gap[1]);
+    const a = o.aAU * AU;
+    const rPeri = a * (1 - o.e);
+    const rEnter = (a * (1 - o.e * o.e)) / (1 + o.e * Math.cos(o.nuMax));
+    return {
+      kind: 'comet', id: c.id, name: c.name, info: c.info,
+      fragments: !!c.fragments,
+      a, e: o.e, omega: o.omega, dir: o.dir || 1, nuMax: o.nuMax,
+      rPeri, rEnter,
+      pass, gap, cycle: pass + gap, offset: 0,
+      active: false, bright: 0, x: 0, y: 0, prevX: 0, prevY: 0, vx: 0, vy: 0,
+    };
+  });
+  COMETS.forEach((c) => { c.offset = Math.random() * c.cycle; });
+  let cometClock = 0;
+
+  /* ---- dwarf planets: planet-like bodies, rendered smaller/dimmer ----
+     Same orbital model as the eight planets (circular at semi-major
+     axis); the navigable radius is boosted slightly off true scale so
+     they stay findable, but kept below the planets. */
+  let showDwarfs = false;
+  const DWARFS = (window.COSMIC_DWARFS || []).map((d, i) => {
+    const rNav = Math.max((d.radiusKm / EARTH_RADIUS_KM) * EARTH_RADIUS_PX * 1.6, 1.4);
+    return {
+      kind: 'dwarf', id: d.id, name: d.name, info: d.info,
+      surface: d.surface, elongated: !!d.elongated, ring: !!d.ring,
+      radiusKm: d.radiusKm,
+      rNav, rTrue: d.radiusKm * KM_TO_WORLD, r: rNav,
+      orbit: d.au * AU,
+      periodDays: d.periodDays,
+      theta0: (i * 1.7 + 0.9) % (Math.PI * 2),
+      frameRadius: 26,
+      moons: [],
+      x: 0, y: 0,
+    };
+  });
+
+  /* ---- Voyager probes: traced flight paths + current-position markers ----
+     V1 = interactive/primary (lime), V2 = interactive/tertiary (teal). */
+  let showVoyagers = false;
+  const PROBE_RGB = { primary: '205, 222, 0', tertiary: '20, 184, 166' };
+  const PROBES = (window.COSMIC_VOYAGERS || []).map((v) => ({
+    kind: 'probe', id: v.id, name: v.name, info: v.info,
+    points: v.points, rgb: PROBE_RGB[v.token] || '205, 222, 0',
+  }));
+
+  /* ---- environmental display flags (Settings card) ---- */
+  let showMoons = true;        // Moon orbits toggle
+  let showPlanetLabels = true; // Planet labels toggle
+  let showOrbitLines = true;   // Orbit path lines toggle
+
+  /* ---- orbit speed: labeled presets, not raw multipliers ---- */
+  const SPEED_MULT = { cinematic: 1, fast: 4, orrery: 20 };
+  let speedMode = 'cinematic'; // last non-paused selection
+  let paused = false;
 
   /* ---- discovery timeline: discrete documented-history stops ---- */
   const TIMELINE_STOPS = [
@@ -348,8 +414,162 @@
     return true;
   }
 
+  function renderCometPanel(obj) {
+    const info = obj.info;
+    if (!info) return false;
+
+    const badges = info.badges
+      .map((b) => `<span class="badge badge--${b.hue}">${escapeHtml(b.text)}</span>`)
+      .join('');
+
+    const stats = info.stats
+      .map(
+        ([label, value]) =>
+          `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`
+      )
+      .join('');
+
+    panelScroll.innerHTML = `
+      <article class="panel-content">
+        <div class="badge-row">${badges}</div>
+        <h2 class="object-name" id="panel-name">${escapeHtml(obj.name)}</h2>
+        <p class="lede">${escapeHtml(info.lede)}</p>
+
+        <section class="panel-section">
+          <h3>Discovery</h3>
+          <p class="headline">${escapeHtml(info.discovery.headline)}</p>
+          <p class="prose">${escapeHtml(info.discovery.body)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Historical Significance</h3>
+          <p class="prose">${escapeHtml(info.significance)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>From Earth</h3>
+          <p class="prose">${escapeHtml(info.earthObs)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Orbit &amp; Vital Statistics</h3>
+          <table class="stats-table"><tbody>${stats}</tbody></table>
+        </section>
+      </article>`;
+    return true;
+  }
+
+  function renderDwarfPanel(obj) {
+    const info = obj.info;
+    if (!info) return false;
+
+    const badges = info.badges
+      .map((b) => `<span class="badge badge--${b.hue}">${escapeHtml(b.text)}</span>`)
+      .join('');
+
+    const stats = info.stats
+      .map(
+        ([label, value]) =>
+          `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`
+      )
+      .join('');
+
+    panelScroll.innerHTML = `
+      <article class="panel-content">
+        <div class="badge-row">${badges}</div>
+        <h2 class="object-name" id="panel-name">${escapeHtml(obj.name)}</h2>
+        <p class="lede">${escapeHtml(info.lede)}</p>
+
+        <section class="panel-section">
+          <h3>Discovery</h3>
+          <p class="headline">${escapeHtml(info.discovery.headline)}</p>
+          <p class="prose">${escapeHtml(info.discovery.body)}</p>
+        </section>
+
+        ${info.reclassification ? `
+        <section class="panel-section">
+          <h3>The 2006 Reclassification</h3>
+          <p class="prose">${escapeHtml(info.reclassification)}</p>
+        </section>` : ''}
+
+        <section class="panel-section">
+          <h3>Surface &amp; Features</h3>
+          <p class="prose">${escapeHtml(info.features)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Vital Statistics</h3>
+          <table class="stats-table"><tbody>${stats}</tbody></table>
+        </section>
+      </article>`;
+    return true;
+  }
+
+  function renderProbePanel(obj) {
+    const info = obj.info;
+    if (!info) return false;
+
+    const badges = info.badges
+      .map((b) => `<span class="badge badge--${b.hue}">${escapeHtml(b.text)}</span>`)
+      .join('');
+
+    const flybys = info.flybys
+      .map(
+        (f) => `
+        <div class="culture-entry">
+          <p class="tradition">${escapeHtml(f.world)}</p>
+          <p class="prose">${escapeHtml(f.text)}</p>
+        </div>`
+      )
+      .join('');
+
+    const stats = info.stats
+      .map(
+        ([label, value]) =>
+          `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`
+      )
+      .join('');
+
+    panelScroll.innerHTML = `
+      <article class="panel-content">
+        <div class="badge-row">${badges}</div>
+        <h2 class="object-name" id="panel-name">${escapeHtml(obj.name)}</h2>
+        <p class="lede">${escapeHtml(info.lede)}</p>
+
+        <section class="panel-section">
+          <h3>Launch</h3>
+          <p class="headline">${escapeHtml(info.launch)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Mission Objectives</h3>
+          <p class="prose">${escapeHtml(info.objectives)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Flyby Discoveries</h3>
+          ${flybys}
+        </section>
+
+        <section class="panel-section">
+          <h3>Current Status</h3>
+          <p class="headline">${escapeHtml(info.distance)}</p>
+          <p class="prose">${escapeHtml(info.status)}</p>
+        </section>
+
+        <section class="panel-section">
+          <h3>Vital Statistics</h3>
+          <table class="stats-table"><tbody>${stats}</tbody></table>
+        </section>
+      </article>`;
+    return true;
+  }
+
   function renderPanel(obj) {
     if (obj.kind === 'constellation') return renderConstellationPanel(obj);
+    if (obj.kind === 'comet') return renderCometPanel(obj);
+    if (obj.kind === 'dwarf') return renderDwarfPanel(obj);
+    if (obj.kind === 'probe') return renderProbePanel(obj);
     const info = window.COSMIC_OBJECT_INFO[obj.id];
     if (!info) return false;
 
@@ -376,6 +596,7 @@
 
     panelScroll.innerHTML = `
       <article class="panel-content">
+        ${info.illustration ? `<figure class="panel-illustration">${info.illustration}</figure>` : ''}
         <div class="badge-row">${badges}</div>
         <h2 class="object-name" id="panel-name">${escapeHtml(obj.name)}</h2>
         <p class="lede">${escapeHtml(info.lede)}</p>
@@ -500,7 +721,7 @@
 
   /* ---- simulation clock ---- */
   let simDays = 0;
-  const DAYS_PER_SECOND = reducedMotion ? 0 : 365.25 / EARTH_YEAR_SECONDS;
+  const BASE_DAYS_PER_SECOND = reducedMotion ? 0 : 365.25 / EARTH_YEAR_SECONDS;
 
   function planetAngle(theta0, periodDays) {
     return theta0 - (simDays / periodDays) * Math.PI * 2;
@@ -516,6 +737,11 @@
         m.x = p.x + Math.cos(ma) * m.orbit;
         m.y = p.y + Math.sin(ma) * m.orbit;
       }
+    }
+    for (const d of DWARFS) {
+      const a = planetAngle(d.theta0, d.periodDays);
+      d.x = Math.cos(a) * d.orbit;
+      d.y = Math.sin(a) * d.orbit;
     }
   }
 
@@ -632,7 +858,7 @@
     let bestDist = Infinity;
     // moons first — they are small targets close to their planet
     for (const p of PLANETS) {
-      if (isGhost(p) || moonVisibility(p) < 0.25) continue;
+      if (!showMoons || isGhost(p) || moonVisibility(p) < 0.25) continue;
       for (const m of p.moons) {
         const s = toScreen(m.x, m.y);
         const d = Math.hypot(sx - s.x, sy - s.y);
@@ -651,6 +877,40 @@
       if (d < apparent + 8 && d < bestDist) {
         best = p;
         bestDist = d;
+      }
+    }
+    if (showDwarfs) {
+      for (const dw of DWARFS) {
+        const s = toScreen(dw.x, dw.y);
+        const apparent = Math.max(dw.r * cam.zoom, 5);
+        const d = Math.hypot(sx - s.x, sy - s.y);
+        if (d < apparent + 8 && d < bestDist) {
+          best = dw;
+          bestDist = d;
+        }
+      }
+    }
+    if (showComets) {
+      for (const c of COMETS) {
+        if (!c.active) continue;
+        const s = toScreen(c.x, c.y);
+        const d = Math.hypot(sx - s.x, sy - s.y);
+        const rr = c.fragments ? 14 : Math.max(2.4 + 3.2 * c.bright, 6);
+        if (d < rr + 8 && d < bestDist) {
+          best = c;
+          bestDist = d;
+        }
+      }
+    }
+    if (showVoyagers) {
+      for (const pr of PROBES) {
+        const last = pr.points[pr.points.length - 1];
+        const s = toScreen(last.x * AU, last.y * AU);
+        const d = Math.hypot(sx - s.x, sy - s.y);
+        if (d < 14 && d < bestDist) {
+          best = pr;
+          bestDist = d;
+        }
       }
     }
     if (!best) {
@@ -682,6 +942,12 @@
     const hit = hitTest(sx, sy);
     if (hit && hit.kind === 'moon') {
       toggleMoonHighlight(hit);
+    } else if (hit && (hit.kind === 'comet' || hit.kind === 'probe')) {
+      // comets drift/vanish and probes sit far out — show the panel
+      // without flying or following
+      selected = hit;
+      following = null;
+      showPanel(hit);
     } else if (hit) {
       if (highlightedMoon && highlightedMoon.planet !== hit) highlightedMoon = null;
       flyTo(hit);
@@ -746,8 +1012,87 @@
     showConstellations = on;
   });
 
+  /* Environmental Settings toggles */
+  wireToggle('moon-orbits', true, (on) => { showMoons = on; });
+  wireToggle('planet-labels', true, (on) => { showPlanetLabels = on; });
+  wireToggle('orbit-lines', true, (on) => { showOrbitLines = on; });
+
+  /* Content Layers — placeholders; features land separately */
+  wireToggle('historical-comets', false, (on) => {
+    showComets = on;
+    if (!on && selected?.kind === 'comet') deselect();
+  });
+  wireToggle('dwarf-planets', false, (on) => {
+    showDwarfs = on;
+    if (!on && selected?.kind === 'dwarf') deselect();
+  });
+  wireToggle('voyager-paths', false, (on) => {
+    showVoyagers = on;
+    if (!on && selected?.kind === 'probe') deselect();
+  });
+
+  /* ---- orbit speed segmented control + play/pause button ----
+     The Pause segment and the inline play/pause icon are two faces of
+     the same paused state; updating it re-renders every instance. */
+  const playPauseBtn = document.getElementById('play-pause');
+  const iconPause = playPauseBtn.querySelector('.icon-pause');
+  const iconPlay = playPauseBtn.querySelector('.icon-play');
+  const segBtns = [...document.querySelectorAll('.seg-btn')];
+
+  function renderSpeed() {
+    const active = paused ? 'pause' : speedMode;
+    for (const b of segBtns) b.classList.toggle('is-active', b.dataset.speed === active);
+    iconPause.style.display = paused ? 'none' : '';
+    iconPlay.style.display = paused ? '' : 'none';
+    const label = paused ? 'Resume animation' : 'Pause animation';
+    playPauseBtn.setAttribute('aria-label', label);
+    playPauseBtn.setAttribute('title', label);
+  }
+
+  function setSpeed(mode) {
+    if (mode === 'pause') {
+      paused = true;
+    } else {
+      speedMode = mode;
+      paused = false;
+    }
+    renderSpeed();
+  }
+
+  for (const b of segBtns) {
+    b.addEventListener('click', () => setSpeed(b.dataset.speed));
+  }
+  playPauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    renderSpeed();
+  });
+  renderSpeed();
+
+  /* ---- Environmental Settings popover (desktop) ---- */
+  const envBtn = document.getElementById('env-settings-btn');
+  const envCard = document.getElementById('env-settings-card');
+  const envWrap = document.getElementById('env-settings-wrap');
+
+  function setEnvOpen(open) {
+    envCard.classList.toggle('is-open', open);
+    envCard.setAttribute('aria-hidden', String(!open));
+    envBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  envBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setEnvOpen(!envCard.classList.contains('is-open'));
+  });
+
+  // click/tap outside the wrapper closes the card
+  document.addEventListener('pointerdown', (e) => {
+    if (!envCard.classList.contains('is-open')) return;
+    if (envWrap.contains(e.target)) return;
+    setEnvOpen(false);
+  });
+
   /* ---- mobile chrome: masthead dismissal, menu, timeline drawer ---- */
-  const mobileQuery = matchMedia('(max-width: 767px)');
+  const mobileQuery = matchMedia('(max-width: 1024px)');
   const masthead = document.querySelector('.masthead');
   const menuBtn = document.getElementById('menu-btn');
   const menuOverlay = document.getElementById('menu-overlay');
@@ -944,6 +1289,7 @@
   }
 
   function drawOrbits() {
+    if (!showOrbitLines) return;
     const sun = toScreen(0, 0);
     for (const p of PLANETS) {
       if (isGhost(p)) continue;
@@ -967,6 +1313,331 @@
       const size = Math.min(3, Math.max(0.6, a.size * cam.zoom));
       ctx.fillStyle = `rgba(${COLOR.belt}, ${a.alpha * ghostFactor})`;
       ctx.fillRect(s.x, s.y, size, size);
+    }
+  }
+
+  function updateComets() {
+    if (!showComets) return;
+    for (const c of COMETS) {
+      const p = (((cometClock - c.offset) % c.cycle) + c.cycle) % c.cycle;
+      c.prevX = c.x;
+      c.prevY = c.y;
+      if (p < c.pass) {
+        c.active = true;
+        const t = p / c.pass;
+        const nu = lerp(-c.nuMax, c.nuMax, t) * c.dir;
+        const r = (c.a * (1 - c.e * c.e)) / (1 + c.e * Math.cos(nu));
+        const ox = r * Math.cos(nu);
+        const oy = r * Math.sin(nu);
+        const cw = Math.cos(c.omega);
+        const sw = Math.sin(c.omega);
+        c.x = ox * cw - oy * sw;
+        c.y = ox * sw + oy * cw;
+        c.bright = clamp01((c.rEnter - r) / (c.rEnter - c.rPeri));
+        c.vx = c.x - c.prevX;
+        c.vy = c.y - c.prevY;
+      } else {
+        c.active = false;
+      }
+    }
+  }
+
+  function drawCometHead(s, headR, lit) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(205, 222, 0, 0.85)';
+    ctx.shadowBlur = lit ? 18 : 12 + headR * 2;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, headR, 0, Math.PI * 2);
+    ctx.fillStyle = COLOR.lime;
+    ctx.fill();
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, headR * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#f7ffd0';
+    ctx.fill();
+    if (lit) {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, headR + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = COLOR.lime;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.8;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawComets() {
+    if (!showComets) return;
+    const sun = toScreen(0, 0);
+    for (const c of COMETS) {
+      if (!c.active) continue;
+      const s = toScreen(c.x, c.y);
+      if (s.x < -240 || s.x > W + 240 || s.y < -240 || s.y > H + 240) continue;
+
+      // tail points anti-solar; length and brightness peak near perihelion
+      let dx = s.x - sun.x;
+      let dy = s.y - sun.y;
+      const dl = Math.hypot(dx, dy) || 1;
+      dx /= dl;
+      dy /= dl;
+      const bright = c.bright;
+      const lit = selected === c || hovered === c;
+
+      if (c.fragments) {
+        // "string of pearls": a chain of nuclei along the motion vector
+        let mx = c.vx;
+        let my = c.vy;
+        const ml = Math.hypot(mx, my) || 1;
+        mx /= ml;
+        my /= ml;
+        const N = 6;
+        const spacing = 7;
+        for (let i = 0; i < N; i++) {
+          const off = (i - (N - 1) / 2) * spacing;
+          const fx = s.x + mx * off;
+          const fy = s.y + my * off;
+          const fr = 1.6 + 1.4 * Math.abs(1 - Math.abs(off) / (spacing * N));
+          const tl = 14 + 26 * bright;
+          const grad = ctx.createLinearGradient(fx, fy, fx + dx * tl, fy + dy * tl);
+          grad.addColorStop(0, `rgba(${COLOR.cometTail}, ${0.35 * bright + 0.12})`);
+          grad.addColorStop(1, `rgba(${COLOR.cometTail}, 0)`);
+          ctx.beginPath();
+          ctx.moveTo(fx, fy);
+          ctx.lineTo(fx + dx * tl, fy + dy * tl);
+          ctx.lineWidth = 2.4;
+          ctx.strokeStyle = grad;
+          ctx.stroke();
+          drawCometHead({ x: fx, y: fy }, fr, lit && i === Math.floor(N / 2));
+        }
+        ctx.lineWidth = 1;
+        continue;
+      }
+
+      const tailLen = 36 + 150 * bright;
+      const headR = 2.4 + 3.2 * bright;
+      const tx = s.x + dx * tailLen;
+      const ty = s.y + dy * tailLen;
+      const w = 3 + 5 * bright;
+      const grad = ctx.createLinearGradient(s.x, s.y, tx, ty);
+      grad.addColorStop(0, `rgba(${COLOR.cometTail}, ${0.5 * bright + 0.18})`);
+      grad.addColorStop(1, `rgba(${COLOR.cometTail}, 0)`);
+      ctx.beginPath();
+      ctx.moveTo(s.x - dy * w, s.y + dx * w);
+      ctx.lineTo(s.x + dy * w, s.y - dx * w);
+      ctx.lineTo(tx, ty);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      drawCometHead(s, headR, lit);
+    }
+  }
+
+  function pointAtFraction(pts, u) {
+    let total = 0;
+    const segs = [];
+    for (let i = 1; i < pts.length; i++) {
+      const len = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+      segs.push(len);
+      total += len;
+    }
+    if (total === 0) return pts[0];
+    let target = u * total;
+    for (let i = 0; i < segs.length; i++) {
+      if (target <= segs[i]) {
+        const t = segs[i] === 0 ? 0 : target / segs[i];
+        return {
+          x: pts[i].x + (pts[i + 1].x - pts[i].x) * t,
+          y: pts[i].y + (pts[i + 1].y - pts[i].y) * t,
+        };
+      }
+      target -= segs[i];
+    }
+    return pts[pts.length - 1];
+  }
+
+  function drawVoyagers(tSec) {
+    if (!showVoyagers) return;
+    for (const pr of PROBES) {
+      const rgb = pr.rgb;
+      const pts = pr.points.map((p) => toScreen(p.x * AU, p.y * AU));
+
+      // traced path
+      ctx.save();
+      ctx.shadowColor = `rgba(${rgb}, 0.5)`;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.strokeStyle = `rgba(${rgb}, 0.55)`;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+      ctx.restore();
+
+      // launch node + flyby waypoints with labels
+      ctx.beginPath();
+      ctx.arc(pts[0].x, pts[0].y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${rgb}, 0.8)`;
+      ctx.fill();
+      for (let i = 0; i < pr.points.length; i++) {
+        const wp = pr.points[i];
+        if (!wp.label) continue;
+        const s = pts[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 2.6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgb(${rgb})`;
+        ctx.fill();
+        ctx.font = '500 10px Montserrat, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = `rgba(${rgb}, 0.9)`;
+        ctx.fillText(wp.label, s.x + 7, s.y);
+      }
+
+      // a signal blip travels the path on a loop (the "animated" trace)
+      if (!reducedMotion) {
+        const blip = pointAtFraction(pts, (tSec % 16) / 16);
+        ctx.save();
+        ctx.shadowColor = `rgba(${rgb}, 0.9)`;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(blip.x, blip.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // current-position marker: pulsing + clickable
+      const m = pts[pts.length - 1];
+      const active = selected === pr || hovered === pr;
+      const pulse = reducedMotion ? 0.5 : 0.5 + 0.5 * Math.sin(tSec * 2.5);
+      ctx.save();
+      ctx.shadowColor = `rgba(${rgb}, 0.9)`;
+      ctx.shadowBlur = 10 + 8 * pulse;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 3.6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgb(${rgb})`;
+      ctx.fill();
+      ctx.restore();
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 5 + 4 * pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${rgb}, ${0.45 * (1 - pulse) + 0.2})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      if (active) {
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 11, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgb(${rgb})`;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.9;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      ctx.font = '600 11px Montserrat, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = `rgb(${rgb})`;
+      ctx.fillText(pr.name.toUpperCase(), m.x + 9, m.y - 7);
+    }
+  }
+
+  function drawDwarfOrbits() {
+    if (!showDwarfs || !showOrbitLines) return;
+    const sun = toScreen(0, 0);
+    ctx.save();
+    ctx.setLineDash([3, 7]);
+    for (const d of DWARFS) {
+      const r = d.orbit * cam.zoom;
+      if (r < 8) continue;
+      const active = hovered === d || selected === d;
+      ctx.beginPath();
+      ctx.arc(sun.x, sun.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = active ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawDwarfs(tSec) {
+    if (!showDwarfs) return;
+    for (const d of DWARFS) {
+      const s = toScreen(d.x, d.y);
+      const r = Math.max(d.r * cam.zoom, 2.0);
+      const pad = d.ring ? r * 2.4 : r;
+      if (s.x < -pad - 30 || s.x > W + pad + 30 || s.y < -pad - 30 || s.y > H + pad + 30) continue;
+
+      const isActive = hovered === d || selected === d;
+
+      if (isActive) {
+        ctx.save();
+        ctx.shadowColor = 'rgba(205, 222, 0, 0.6)';
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(205, 222, 0, 0.3)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // light from the sun at the origin
+      const lx = -d.x;
+      const ly = -d.y;
+      const len = Math.hypot(lx, ly) || 1;
+      const hx = s.x + (lx / len) * r * 0.45;
+      const hy = s.y + (ly / len) * r * 0.45;
+      const grad = ctx.createRadialGradient(hx, hy, r * 0.1, s.x, s.y, r * 1.3);
+      grad.addColorStop(0, d.surface[0]);
+      grad.addColorStop(0.55, d.surface[1]);
+      grad.addColorStop(1, d.surface[2]);
+
+      // dwarf planets read dimmer than the eight planets
+      ctx.globalAlpha = isActive ? 1 : 0.85;
+      ctx.beginPath();
+      if (d.elongated) {
+        ctx.ellipse(s.x, s.y, r * 1.35, r * 0.82, -0.4, 0, Math.PI * 2);
+      } else {
+        ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+      }
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Haumea's ring
+      if (d.ring && r > 3) {
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(-0.4);
+        ctx.scale(1, 0.34);
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 1.9, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.45)';
+        ctx.lineWidth = Math.max(r * 0.18, 1);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (isActive) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, (d.elongated ? r * 1.4 : r) + 6, 0, Math.PI * 2);
+        ctx.strokeStyle = COLOR.lime;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = selected === d ? 0.9 : 0.6;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // label: dimmer than planet labels, shown when framed or active
+      const orbitScreen = d.orbit * cam.zoom;
+      let alpha = isActive ? 1 : Math.max(0, Math.min(1, (orbitScreen - 60) / 120));
+      if (alpha > 0.02) {
+        ctx.font = '500 12px Montserrat, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = isActive ? COLOR.lime : COLOR.labelDim;
+        ctx.fillText(d.name.toUpperCase(), s.x, s.y - (d.elongated ? r * 0.82 : r) - 9);
+        ctx.globalAlpha = 1;
+      }
     }
   }
 
@@ -1110,7 +1781,7 @@
   }
 
   function drawMoons(p) {
-    if (isGhost(p) || !p.moons.length) return;
+    if (!showMoons || isGhost(p) || !p.moons.length) return;
     const vis = moonVisibility(p);
     if (vis <= 0) return;
     const ps = toScreen(p.x, p.y);
@@ -1180,7 +1851,7 @@
   }
 
   function drawLabel(p) {
-    if (isGhost(p)) return;
+    if (!showPlanetLabels || isGhost(p)) return;
     const orbitScreen = p.orbit * cam.zoom;
     const isActive = hovered === p || selected === p;
     let alpha = (orbitScreen - 55) / 90;
@@ -1210,7 +1881,8 @@
     const dt = Math.min(0.05, (now - lastT) / 1000);
     const tSec = now / 1000;
     lastT = now;
-    simDays += DAYS_PER_SECOND * dt;
+    if (!paused) simDays += BASE_DAYS_PER_SECOND * SPEED_MULT[speedMode] * dt;
+    if (showComets && !paused) cometClock += dt;
 
     // scale mode crossfade (~0.9s, radii eased in log space) —
     // applied before updatePositions so orbits and positions agree
@@ -1227,6 +1899,7 @@
     target.zoom = Math.min(maxZoom(), Math.max(minZoom, target.zoom));
 
     updatePositions();
+    updateComets();
 
     if (following) {
       // ride along with the object's orbital motion so the camera never
@@ -1260,6 +1933,7 @@
     drawStars(tSec);
     drawConstellations();
     drawOrbits();
+    drawDwarfOrbits();
     drawBelt();
     drawSun();
     if (hovered === SUN || selected === SUN) {
@@ -1275,6 +1949,9 @@
     for (const p of PLANETS) drawPlanet(p, tSec);
     for (const p of PLANETS) drawMoons(p);
     for (const p of PLANETS) drawLabel(p);
+    drawDwarfs(tSec);
+    drawVoyagers(tSec);
+    drawComets();
 
     // keep card badges in sync with canvas hover/highlight changes
     if (hovered !== lastMoonHover && (hovered?.kind === 'moon' || lastMoonHover)) {
@@ -1293,6 +1970,22 @@
   window.__cosmic = {
     cam, target, PLANETS, SUN, CONSTS, flyTo, resetView, deselect,
     scaleState, applyStop, TIMELINE_STOPS, toggleMoonHighlight,
+    COMETS, DWARFS, PROBES,
+    openPanel: (id) => {
+      const obj = id === 'sol' ? SUN
+        : PLANETS.find((p) => p.id === id)
+        || DWARFS.find((d) => d.id === id)
+        || COMETS.find((c) => c.id === id)
+        || PROBES.find((p) => p.id === id);
+      if (!obj) return;
+      if (obj.kind === 'comet' || obj.kind === 'probe') {
+        selected = obj;
+        showPanel(obj);
+      } else {
+        flyTo(obj);
+        showPanel(obj);
+      }
+    },
     get currentStop() { return currentStop; },
     get highlightedMoon() { return highlightedMoon; },
   };

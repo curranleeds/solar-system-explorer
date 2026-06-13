@@ -7,6 +7,66 @@
 window.COSMIC_OBJECT_INFO = {
   sol: {
     class: 'G2V Star',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of the Sun with corona rays and a granulated surface">
+  <defs>
+    <radialGradient id="sun-bg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#1a1407"/><stop offset="100%" stop-color="#05060a"/>
+    </radialGradient>
+    <radialGradient id="sun-core" cx="46%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#fff6d8"/><stop offset="45%" stop-color="#fcd877"/><stop offset="80%" stop-color="#f3a32c"/><stop offset="100%" stop-color="#c4631a"/>
+    </radialGradient>
+    <radialGradient id="sun-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f7b733" stop-opacity="0.5"/><stop offset="45%" stop-color="#e8852a" stop-opacity="0.2"/><stop offset="100%" stop-color="#e8852a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun-limb" cx="46%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#fff0c0" stop-opacity="0.45"/><stop offset="55%" stop-color="#fff0c0" stop-opacity="0"/><stop offset="100%" stop-color="#8a3d0c" stop-opacity="0.45"/>
+    </radialGradient>
+    <filter id="sun-gran" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.085" numOctaves="3" seed="6" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.96  0 0 0 0 0.62  0 0 0 0 0.16  0 0 0 0.7 0"/>
+    </filter>
+    <polygon id="sun-ray" points="240,4 235,116 245,116" fill="#f6b53a" opacity="0.5"/>
+    <clipPath id="sun-clip"><circle cx="240" cy="120" r="92"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#sun-bg)"/>
+  <g>
+    <use href="#sun-ray"/>
+    <use href="#sun-ray" transform="rotate(20 240 120)"/>
+    <use href="#sun-ray" transform="rotate(40 240 120)"/>
+    <use href="#sun-ray" transform="rotate(60 240 120)"/>
+    <use href="#sun-ray" transform="rotate(80 240 120)"/>
+    <use href="#sun-ray" transform="rotate(100 240 120)"/>
+    <use href="#sun-ray" transform="rotate(120 240 120)"/>
+    <use href="#sun-ray" transform="rotate(140 240 120)"/>
+    <use href="#sun-ray" transform="rotate(160 240 120)"/>
+    <use href="#sun-ray" transform="rotate(180 240 120)"/>
+    <use href="#sun-ray" transform="rotate(200 240 120)"/>
+    <use href="#sun-ray" transform="rotate(220 240 120)"/>
+    <use href="#sun-ray" transform="rotate(240 240 120)"/>
+    <use href="#sun-ray" transform="rotate(260 240 120)"/>
+    <use href="#sun-ray" transform="rotate(280 240 120)"/>
+    <use href="#sun-ray" transform="rotate(300 240 120)"/>
+    <use href="#sun-ray" transform="rotate(320 240 120)"/>
+    <use href="#sun-ray" transform="rotate(340 240 120)"/>
+  </g>
+  <circle cx="240" cy="120" r="150" fill="url(#sun-glow)"/>
+  <circle cx="240" cy="120" r="92" fill="url(#sun-core)"/>
+  <g clip-path="url(#sun-clip)">
+    <rect x="148" y="28" width="184" height="184" fill="url(#sun-gran)" opacity="0.4"/>
+    <g opacity="0.8">
+      <ellipse cx="210" cy="140" rx="11" ry="8" fill="#9a4410"/>
+      <ellipse cx="210" cy="140" rx="5" ry="3.6" fill="#5e2708"/>
+      <ellipse cx="270" cy="98" rx="7" ry="5" fill="#9a4410"/>
+      <ellipse cx="270" cy="98" rx="3" ry="2.2" fill="#5e2708"/>
+    </g>
+    <rect x="148" y="28" width="184" height="184" fill="url(#sun-limb)"/>
+  </g>
+  <g fill="none" stroke="#f08a2a" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <path d="M170,64 q-16,-16 4,-28"/>
+    <path d="M320,150 q18,10 6,30"/>
+  </g>
+  <circle cx="240" cy="120" r="92" fill="none" stroke="#ffe9a8" stroke-opacity="0.4" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Yellow dwarf' },
       { hue: 'orange', text: '99.86% of system mass' },
@@ -38,6 +98,64 @@ window.COSMIC_OBJECT_INFO = {
 
   mercury: {
     class: 'Terrestrial planet',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Mercury's heavily cratered grey surface">
+  <defs>
+    <radialGradient id="mer-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#161a22"/><stop offset="100%" stop-color="#05070c"/>
+    </radialGradient>
+    <radialGradient id="mer-body" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#c6c0b4"/><stop offset="58%" stop-color="#8d877c"/><stop offset="100%" stop-color="#4b463e"/>
+    </radialGradient>
+    <radialGradient id="mer-shade" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#04060c" stop-opacity="0"/><stop offset="62%" stop-color="#04060c" stop-opacity="0"/><stop offset="100%" stop-color="#04060c" stop-opacity="0.82"/>
+    </radialGradient>
+    <radialGradient id="mer-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="64%" stop-color="#9aa0aa" stop-opacity="0"/><stop offset="88%" stop-color="#9aa0aa" stop-opacity="0.12"/><stop offset="100%" stop-color="#9aa0aa" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="mer-rough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="9" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.48  0 0 0 0 0.44  0 0 0 0.5 0"/>
+    </filter>
+    <g id="mer-crater">
+      <circle r="11" fill="#7d776c"/>
+      <path d="M-8,-6 A11 11 0 0 1 8,-6" fill="none" stroke="#cbc4b6" stroke-width="2" opacity="0.55"/>
+      <path d="M-8,7 A11 11 0 0 0 8,7" fill="none" stroke="#45403a" stroke-width="2.4" opacity="0.7"/>
+      <circle r="11" fill="none" stroke="#564f47" stroke-width="1" opacity="0.5"/>
+    </g>
+    <clipPath id="mer-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#mer-bg)"/>
+  <g fill="#aab2c0">
+    <circle cx="58" cy="50" r="1" opacity="0.5"/><circle cx="430" cy="44" r="1" opacity="0.5"/>
+    <circle cx="446" cy="180" r="0.8" opacity="0.4"/><circle cx="36" cy="166" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="150" fill="url(#mer-halo)"/>
+  <g clip-path="url(#mer-clip)">
+    <rect x="102" y="-18" width="276" height="276" fill="url(#mer-body)"/>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#mer-rough)" opacity="0.5"/>
+    <g>
+      <use href="#mer-crater" transform="translate(196 86) scale(1.15)"/>
+      <use href="#mer-crater" transform="translate(252 72) scale(0.7)"/>
+      <use href="#mer-crater" transform="translate(304 104) scale(1.35)"/>
+      <use href="#mer-crater" transform="translate(212 142) scale(0.95)"/>
+      <use href="#mer-crater" transform="translate(270 152) scale(1.1)"/>
+      <use href="#mer-crater" transform="translate(174 120) scale(0.8)"/>
+      <use href="#mer-crater" transform="translate(316 164) scale(0.7)"/>
+      <use href="#mer-crater" transform="translate(238 188) scale(1.0)"/>
+      <use href="#mer-crater" transform="translate(292 198) scale(0.6)"/>
+      <use href="#mer-crater" transform="translate(158 162) scale(0.65)"/>
+      <use href="#mer-crater" transform="translate(204 204) scale(0.7)"/>
+      <use href="#mer-crater" transform="translate(330 128) scale(0.9)"/>
+      <use href="#mer-crater" transform="translate(150 96) scale(0.6)"/>
+      <use href="#mer-crater" transform="translate(282 116) scale(0.55)"/>
+      <use href="#mer-crater" transform="translate(326 88) scale(0.6)"/>
+      <use href="#mer-crater" transform="translate(238 116) scale(0.5)"/>
+    </g>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#mer-shade)"/>
+    <ellipse cx="190" cy="74" rx="42" ry="24" fill="#fbfdff" opacity="0.08"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#dfe3ea" stroke-opacity="0.14" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Terrestrial' },
       { hue: 'gray', text: 'Known since antiquity' },
@@ -69,6 +187,46 @@ window.COSMIC_OBJECT_INFO = {
 
   venus: {
     class: 'Terrestrial planet',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Venus shrouded in thick amber cloud cover">
+  <defs>
+    <radialGradient id="ven-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#1d1710"/><stop offset="100%" stop-color="#070608"/>
+    </radialGradient>
+    <radialGradient id="ven-body" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#f1ddb2"/><stop offset="58%" stop-color="#cfa869"/><stop offset="100%" stop-color="#85602f"/>
+    </radialGradient>
+    <radialGradient id="ven-shade" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#0a0704" stop-opacity="0"/><stop offset="62%" stop-color="#0a0704" stop-opacity="0"/><stop offset="100%" stop-color="#0a0704" stop-opacity="0.78"/>
+    </radialGradient>
+    <radialGradient id="ven-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="64%" stop-color="#e8c483" stop-opacity="0"/><stop offset="88%" stop-color="#e8c483" stop-opacity="0.16"/><stop offset="100%" stop-color="#e8c483" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="ven-clouds" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="3" seed="3" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.95  0 0 0 0 0.82  0 0 0 0 0.55  0 0 0 0.5 0"/>
+    </filter>
+    <clipPath id="ven-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#ven-bg)"/>
+  <g fill="#c4b69a">
+    <circle cx="56" cy="48" r="1" opacity="0.5"/><circle cx="432" cy="46" r="1" opacity="0.5"/>
+    <circle cx="446" cy="182" r="0.8" opacity="0.4"/><circle cx="34" cy="168" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="150" fill="url(#ven-halo)"/>
+  <g clip-path="url(#ven-clip)">
+    <rect x="102" y="-18" width="276" height="276" fill="url(#ven-body)"/>
+    <g fill="none" stroke-linecap="round" opacity="0.4">
+      <path d="M112,84 q64,-12 128,-2 q64,10 128,-4" stroke="#f0deb8" stroke-width="9"/>
+      <path d="M112,128 q70,12 140,2 q60,-10 120,2" stroke="#9c7a45" stroke-width="7"/>
+      <path d="M112,170 q64,-10 128,0 q64,10 128,-2" stroke="#efdcb4" stroke-width="8"/>
+    </g>
+    <path d="M150,60 q70,40 96,60 q-30,30 -90,52" fill="none" stroke="#f4e6c4" stroke-width="5" opacity="0.3" stroke-linecap="round"/>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#ven-clouds)" opacity="0.32"/>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#ven-shade)"/>
+    <ellipse cx="190" cy="74" rx="44" ry="25" fill="#fff6e0" opacity="0.16"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#f3e3bf" stroke-opacity="0.16" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Terrestrial' },
       { hue: 'red', text: 'Hottest surface' },
@@ -100,6 +258,48 @@ window.COSMIC_OBJECT_INFO = {
 
   earth: {
     class: 'Terrestrial planet',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Earth with land masses and a blue atmosphere">
+  <defs>
+    <radialGradient id="ear-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#0c1424"/><stop offset="100%" stop-color="#05080f"/>
+    </radialGradient>
+    <radialGradient id="ear-ocean" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#9fc9f0"/><stop offset="55%" stop-color="#3f78c8"/><stop offset="100%" stop-color="#16356b"/>
+    </radialGradient>
+    <radialGradient id="ear-shade" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#03060c" stop-opacity="0"/><stop offset="60%" stop-color="#03060c" stop-opacity="0"/><stop offset="100%" stop-color="#03060c" stop-opacity="0.8"/>
+    </radialGradient>
+    <radialGradient id="ear-atmo" cx="50%" cy="50%" r="50%">
+      <stop offset="60%" stop-color="#7db4f0" stop-opacity="0"/><stop offset="86%" stop-color="#7db4f0" stop-opacity="0.28"/><stop offset="100%" stop-color="#7db4f0" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="ear-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#ear-bg)"/>
+  <g fill="#aebfd6">
+    <circle cx="56" cy="48" r="1" opacity="0.5"/><circle cx="434" cy="46" r="1" opacity="0.5"/>
+    <circle cx="446" cy="184" r="0.8" opacity="0.4"/><circle cx="34" cy="168" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="152" fill="url(#ear-atmo)"/>
+  <g clip-path="url(#ear-clip)">
+    <rect x="102" y="-18" width="276" height="276" fill="url(#ear-ocean)"/>
+    <g fill="#5f8050">
+      <path d="M236,52 q-16,10 -12,30 q-12,14 -2,32 q-8,20 6,40 q10,18 26,30 q14,8 18,-8 q12,-10 4,-26 q12,-14 2,-30 q10,-16 -4,-28 q4,-18 -14,-26 q-12,-16 -24,-10 Z" fill="#6f8f57"/>
+      <path d="M252,40 q18,-6 30,4 q14,2 10,16 q-14,8 -28,2 q-16,0 -12,-22 Z" fill="#7a9a60"/>
+      <path d="M150,128 q-14,8 -10,26 q-8,16 6,28 q10,12 16,-2 q10,-10 2,-24 q4,-16 -14,-28 Z" fill="#6a8a52"/>
+      <path d="M300,150 q18,-4 28,8 q10,10 -4,18 q-18,6 -28,-6 q-8,-12 4,-20 Z" fill="#74946a"/>
+    </g>
+    <g fill="#b8895a" opacity="0.55">
+      <path d="M246,70 q12,-2 14,10 q-2,12 -14,10 q-10,-10 0,-20 Z"/>
+    </g>
+    <g fill="#eef4fb" opacity="0.22">
+      <path d="M170,86 q40,-10 80,2 q-30,14 -82,8 q-12,-6 2,-10 Z"/>
+      <path d="M214,168 q44,-6 78,6 q-34,12 -80,4 q-10,-6 2,-10 Z"/>
+    </g>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#ear-shade)"/>
+    <ellipse cx="188" cy="74" rx="40" ry="22" fill="#ffffff" opacity="0.12"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#bcdcff" stroke-opacity="0.22" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Terrestrial' },
       { hue: 'lime', text: 'Inhabited' },
@@ -131,6 +331,58 @@ window.COSMIC_OBJECT_INFO = {
 
   mars: {
     class: 'Terrestrial planet',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Mars with Olympus Mons on a rust-red surface">
+  <defs>
+    <radialGradient id="mar-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#1d130e"/><stop offset="100%" stop-color="#080507"/>
+    </radialGradient>
+    <radialGradient id="mar-body" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#dc8c64"/><stop offset="56%" stop-color="#b35330"/><stop offset="100%" stop-color="#6c2912"/>
+    </radialGradient>
+    <radialGradient id="mar-mons" cx="40%" cy="36%" r="60%">
+      <stop offset="0%" stop-color="#dc8b5d"/><stop offset="100%" stop-color="#a44d2c"/>
+    </radialGradient>
+    <radialGradient id="mar-shade" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#0a0503" stop-opacity="0"/><stop offset="60%" stop-color="#0a0503" stop-opacity="0"/><stop offset="100%" stop-color="#0a0503" stop-opacity="0.8"/>
+    </radialGradient>
+    <radialGradient id="mar-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="64%" stop-color="#d2784c" stop-opacity="0"/><stop offset="88%" stop-color="#d2784c" stop-opacity="0.16"/><stop offset="100%" stop-color="#d2784c" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="mar-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#mar-bg)"/>
+  <g fill="#c2a496">
+    <circle cx="56" cy="48" r="1" opacity="0.5"/><circle cx="434" cy="46" r="1" opacity="0.5"/>
+    <circle cx="446" cy="184" r="0.8" opacity="0.4"/><circle cx="34" cy="168" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="150" fill="url(#mar-halo)"/>
+  <g clip-path="url(#mar-clip)">
+    <rect x="102" y="-18" width="276" height="276" fill="url(#mar-body)"/>
+    <ellipse cx="240" cy="6" rx="46" ry="16" fill="#eef2f4" opacity="0.7"/>
+    <ellipse cx="240" cy="232" rx="34" ry="12" fill="#eef2f4" opacity="0.55"/>
+    <g opacity="0.5" fill="#7c331a">
+      <ellipse cx="300" cy="150" rx="40" ry="14" transform="rotate(-12 300 150)"/>
+      <ellipse cx="206" cy="170" rx="26" ry="10" transform="rotate(8 206 170)"/>
+    </g>
+    <path d="M236,148 q44,-10 92,2 q22,4 40,-2" fill="none" stroke="#5f2410" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+    <g>
+      <circle cx="202" cy="106" r="34" fill="url(#mar-mons)"/>
+      <circle cx="202" cy="106" r="34" fill="none" stroke="#e6a276" stroke-width="1.5" opacity="0.45"/>
+      <circle cx="202" cy="106" r="22" fill="none" stroke="#8f4023" stroke-width="2" opacity="0.5"/>
+      <circle cx="202" cy="106" r="10" fill="#5e2712"/>
+      <path d="M194,100 A10 10 0 0 1 210,100" fill="none" stroke="#e0a074" stroke-width="1.6" opacity="0.6"/>
+      <ellipse cx="194" cy="98" rx="13" ry="8" fill="#eaa978" opacity="0.4"/>
+    </g>
+    <g fill="#9a4527" opacity="0.7">
+      <circle cx="172" cy="150" r="6"/>
+      <circle cx="156" cy="128" r="5"/>
+      <circle cx="186" cy="68" r="5"/>
+    </g>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#mar-shade)"/>
+    <ellipse cx="190" cy="74" rx="42" ry="24" fill="#ffe6d4" opacity="0.1"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#f0c4a8" stroke-opacity="0.16" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Terrestrial' },
       { hue: 'gray', text: 'Known since antiquity' },
@@ -162,6 +414,76 @@ window.COSMIC_OBJECT_INFO = {
 
   jupiter: {
     class: 'Gas giant',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Jupiter showing its banded atmosphere and Great Red Spot">
+  <defs>
+    <radialGradient id="jup-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#111c31"/>
+      <stop offset="100%" stop-color="#05080f"/>
+    </radialGradient>
+    <radialGradient id="jup-body" cx="38%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#e2cda4"/>
+      <stop offset="60%" stop-color="#bda06f"/>
+      <stop offset="100%" stop-color="#74502f"/>
+    </radialGradient>
+    <radialGradient id="jup-shade" cx="36%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#04060c" stop-opacity="0"/>
+      <stop offset="64%" stop-color="#04060c" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#04060c" stop-opacity="0.8"/>
+    </radialGradient>
+    <radialGradient id="jup-grs" cx="46%" cy="40%" r="62%">
+      <stop offset="0%" stop-color="#c87a5f"/>
+      <stop offset="52%" stop-color="#9d4e37"/>
+      <stop offset="100%" stop-color="#693624"/>
+    </radialGradient>
+    <radialGradient id="jup-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="62%" stop-color="#c4a577" stop-opacity="0"/>
+      <stop offset="86%" stop-color="#c4a577" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#c4a577" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="jup-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#jup-bg)"/>
+  <g fill="#b8c2d4">
+    <circle cx="54" cy="46" r="1" opacity="0.5"/>
+    <circle cx="128" cy="206" r="0.9" opacity="0.4"/>
+    <circle cx="426" cy="58" r="1.1" opacity="0.55"/>
+    <circle cx="448" cy="176" r="0.8" opacity="0.4"/>
+    <circle cx="28" cy="150" r="0.8" opacity="0.35"/>
+    <circle cx="398" cy="214" r="0.8" opacity="0.3"/>
+  </g>
+  <circle cx="240" cy="120" r="150" fill="url(#jup-halo)"/>
+  <g clip-path="url(#jup-clip)">
+    <rect x="100" y="-20" width="280" height="280" fill="url(#jup-body)"/>
+    <g>
+      <rect x="100" y="-20" width="280" height="40" fill="#b6a079"/>
+      <rect x="100" y="16"  width="280" height="14" fill="#ddc9a1"/>
+      <rect x="100" y="28"  width="280" height="16" fill="#9c7547"/>
+      <rect x="100" y="42"  width="280" height="22" fill="#d6c195"/>
+      <rect x="100" y="62"  width="280" height="14" fill="#86603e"/>
+      <rect x="100" y="75"  width="280" height="24" fill="#cfba90"/>
+      <rect x="100" y="98"  width="280" height="16" fill="#a37c4e"/>
+      <rect x="100" y="112" width="280" height="28" fill="#e0cb9f"/>
+      <rect x="100" y="138" width="280" height="16" fill="#8d6841"/>
+      <rect x="100" y="152" width="280" height="26" fill="#ccb78b"/>
+      <rect x="100" y="176" width="280" height="16" fill="#9a7345"/>
+      <rect x="100" y="190" width="280" height="22" fill="#c8b288"/>
+      <rect x="100" y="208" width="280" height="52" fill="#a89169"/>
+    </g>
+    <g stroke-linecap="round" fill="none" opacity="0.4">
+      <path d="M120,36 q60,6 120,0 t120,-2" stroke="#6f5132" stroke-width="2"/>
+      <path d="M120,106 q70,-6 140,0 t120,2" stroke="#7c5c39" stroke-width="2"/>
+      <path d="M120,184 q60,7 130,1 t120,-2" stroke="#6f5132" stroke-width="2"/>
+    </g>
+    <g>
+      <ellipse cx="182" cy="150" rx="33" ry="19" fill="url(#jup-grs)"/>
+      <ellipse cx="182" cy="150" rx="33" ry="19" fill="none" stroke="#d8a48d" stroke-width="1" opacity="0.35"/>
+      <ellipse cx="178" cy="147" rx="16" ry="9" fill="#b5654a" opacity="0.55"/>
+    </g>
+    <rect x="100" y="-20" width="280" height="280" fill="url(#jup-shade)"/>
+    <ellipse cx="188" cy="74" rx="46" ry="26" fill="#fff4dc" opacity="0.12"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#f0e2c2" stroke-opacity="0.16" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Gas giant' },
       { hue: 'orange', text: 'Largest planet' },
@@ -193,6 +515,48 @@ window.COSMIC_OBJECT_INFO = {
 
   saturn: {
     class: 'Gas giant',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Saturn with its prominent ring system at a slight angle">
+  <defs>
+    <radialGradient id="sat-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#16140d"/><stop offset="100%" stop-color="#070608"/>
+    </radialGradient>
+    <radialGradient id="sat-body" cx="40%" cy="32%" r="74%">
+      <stop offset="0%" stop-color="#f2e4ba"/><stop offset="58%" stop-color="#cdb47b"/><stop offset="100%" stop-color="#86713f"/>
+    </radialGradient>
+    <radialGradient id="sat-shade" cx="38%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#0a0804" stop-opacity="0"/><stop offset="60%" stop-color="#0a0804" stop-opacity="0"/><stop offset="100%" stop-color="#0a0804" stop-opacity="0.74"/>
+    </radialGradient>
+    <radialGradient id="sat-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="64%" stop-color="#e6cf93" stop-opacity="0"/><stop offset="90%" stop-color="#e6cf93" stop-opacity="0.13"/><stop offset="100%" stop-color="#e6cf93" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="sat-clip"><circle cx="240" cy="120" r="82"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#sat-bg)"/>
+  <g fill="#c4ba99">
+    <circle cx="48" cy="44" r="1" opacity="0.5"/><circle cx="440" cy="50" r="1" opacity="0.5"/>
+    <circle cx="452" cy="186" r="0.8" opacity="0.4"/><circle cx="30" cy="170" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="96" fill="url(#sat-halo)"/>
+  <g transform="rotate(-16 240 120)" fill="none" stroke-linecap="butt" opacity="0.82">
+    <path d="M44,120 A196,52 0 0 0 436,120" stroke="#d3c094" stroke-width="13"/>
+    <path d="M72,120 A170,45 0 0 0 408,120" stroke="#bba577" stroke-width="8"/>
+  </g>
+  <g clip-path="url(#sat-clip)">
+    <rect x="156" y="36" width="168" height="168" fill="url(#sat-body)"/>
+    <g stroke-linecap="round" fill="none" opacity="0.3">
+      <path d="M164,98 q38,6 76,0 t72,-2" stroke="#9a8350" stroke-width="3"/>
+      <path d="M164,124 q40,-5 80,0 t72,2" stroke="#b69e69" stroke-width="3"/>
+      <path d="M164,150 q38,6 76,0 t72,-2" stroke="#9a8350" stroke-width="3"/>
+    </g>
+    <rect x="156" y="36" width="168" height="168" fill="url(#sat-shade)"/>
+    <ellipse cx="206" cy="78" rx="34" ry="19" fill="#fff7df" opacity="0.14"/>
+  </g>
+  <g transform="rotate(-16 240 120)" fill="none" stroke-linecap="butt">
+    <path d="M44,120 A196,52 0 0 1 436,120" stroke="#e4d4ad" stroke-width="13"/>
+    <path d="M72,120 A170,45 0 0 1 408,120" stroke="#cebb8c" stroke-width="8"/>
+  </g>
+  <circle cx="240" cy="120" r="82" fill="none" stroke="#f3e6c2" stroke-opacity="0.14" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Gas giant' },
       { hue: 'gray', text: 'Known since antiquity' },
@@ -224,6 +588,53 @@ window.COSMIC_OBJECT_INFO = {
 
   uranus: {
     class: 'Ice giant',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Uranus, pale blue-green and tipped on its side with vertical rings">
+  <defs>
+    <radialGradient id="ura-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#0c1a1e"/><stop offset="100%" stop-color="#05090c"/>
+    </radialGradient>
+    <radialGradient id="ura-body" cx="40%" cy="32%" r="78%">
+      <stop offset="0%" stop-color="#d2eff0"/><stop offset="56%" stop-color="#86c6c6"/><stop offset="100%" stop-color="#3c8688"/>
+    </radialGradient>
+    <radialGradient id="ura-shade" cx="38%" cy="30%" r="82%">
+      <stop offset="0%" stop-color="#03090b" stop-opacity="0"/><stop offset="60%" stop-color="#03090b" stop-opacity="0"/><stop offset="100%" stop-color="#03090b" stop-opacity="0.72"/>
+    </radialGradient>
+    <radialGradient id="ura-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="62%" stop-color="#a8e4e4" stop-opacity="0"/><stop offset="88%" stop-color="#a8e4e4" stop-opacity="0.18"/><stop offset="100%" stop-color="#a8e4e4" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="ura-clip"><circle cx="240" cy="120" r="92"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#ura-bg)"/>
+  <g fill="#a6c8c8">
+    <circle cx="52" cy="46" r="1" opacity="0.5"/><circle cx="436" cy="48" r="1" opacity="0.5"/>
+    <circle cx="448" cy="184" r="0.8" opacity="0.4"/><circle cx="32" cy="170" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="100" fill="url(#ura-halo)"/>
+  <g transform="rotate(102 240 120)" fill="none" stroke-linecap="butt" opacity="0.5">
+    <path d="M88,120 A152,40 0 0 0 392,120" stroke="#bfe6e6" stroke-width="4"/>
+    <path d="M104,120 A136,36 0 0 0 376,120" stroke="#8fc4c4" stroke-width="2.5"/>
+  </g>
+  <g clip-path="url(#ura-clip)">
+    <rect x="148" y="28" width="184" height="184" fill="url(#ura-body)"/>
+    <g stroke-linecap="round" fill="none" opacity="0.22">
+      <path d="M156,104 q42,5 84,0 t76,-2" stroke="#5fa6a6" stroke-width="4"/>
+      <path d="M156,136 q44,-5 88,0 t72,2" stroke="#aadede" stroke-width="4"/>
+    </g>
+    <ellipse cx="206" cy="80" rx="34" ry="20" fill="#eafafa" opacity="0.14"/>
+    <rect x="148" y="28" width="184" height="184" fill="url(#ura-shade)"/>
+  </g>
+  <g transform="rotate(102 240 120)" fill="none" stroke-linecap="butt" opacity="0.62">
+    <path d="M88,120 A152,40 0 0 1 392,120" stroke="#cdeeee" stroke-width="4"/>
+    <path d="M104,120 A136,36 0 0 1 376,120" stroke="#9fd0d0" stroke-width="2.5"/>
+  </g>
+  <g stroke="#dff4f4" stroke-opacity="0.5" stroke-width="1.4" stroke-dasharray="5 6">
+    <line x1="111" y1="101" x2="369" y2="139"/>
+  </g>
+  <g fill="#eafafa" opacity="0.7">
+    <circle cx="146" cy="106" r="2.4"/><circle cx="334" cy="134" r="2.4"/>
+  </g>
+  <circle cx="240" cy="120" r="92" fill="none" stroke="#d4f2f2" stroke-opacity="0.18" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Ice giant' },
       { hue: 'lime', text: 'First telescopic discovery' },
@@ -255,6 +666,57 @@ window.COSMIC_OBJECT_INFO = {
 
   neptune: {
     class: 'Ice giant',
+    illustration: `<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized illustration of Neptune, deep blue with a wind band and a great dark spot">
+  <defs>
+    <radialGradient id="nep-bg" cx="50%" cy="38%" r="80%">
+      <stop offset="0%" stop-color="#0a1226"/><stop offset="100%" stop-color="#04060f"/>
+    </radialGradient>
+    <radialGradient id="nep-body" cx="40%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#9ab8ef"/><stop offset="55%" stop-color="#4a6fca"/><stop offset="100%" stop-color="#1d3278"/>
+    </radialGradient>
+    <radialGradient id="nep-shade" cx="38%" cy="28%" r="82%">
+      <stop offset="0%" stop-color="#03060f" stop-opacity="0"/><stop offset="60%" stop-color="#03060f" stop-opacity="0"/><stop offset="100%" stop-color="#03060f" stop-opacity="0.8"/>
+    </radialGradient>
+    <radialGradient id="nep-grds" cx="44%" cy="38%" r="64%">
+      <stop offset="0%" stop-color="#33508f"/><stop offset="60%" stop-color="#1a2f63"/><stop offset="100%" stop-color="#0d1c44"/>
+    </radialGradient>
+    <radialGradient id="nep-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="62%" stop-color="#6f95e6" stop-opacity="0"/><stop offset="88%" stop-color="#6f95e6" stop-opacity="0.2"/><stop offset="100%" stop-color="#6f95e6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="nep-clouds" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.055" numOctaves="3" seed="5" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.62  0 0 0 0 0.74  0 0 0 0 0.96  0 0 0 0.45 0"/>
+    </filter>
+    <clipPath id="nep-clip"><circle cx="240" cy="120" r="138"/></clipPath>
+  </defs>
+  <rect width="480" height="240" fill="url(#nep-bg)"/>
+  <g fill="#aebfdf">
+    <circle cx="54" cy="48" r="1" opacity="0.5"/><circle cx="434" cy="46" r="1" opacity="0.5"/>
+    <circle cx="446" cy="184" r="0.8" opacity="0.4"/><circle cx="34" cy="168" r="0.8" opacity="0.35"/>
+  </g>
+  <circle cx="240" cy="120" r="152" fill="url(#nep-halo)"/>
+  <g clip-path="url(#nep-clip)">
+    <rect x="102" y="-18" width="276" height="276" fill="url(#nep-body)"/>
+    <g>
+      <rect x="102" y="74" width="276" height="22" fill="#5f81d2" opacity="0.5"/>
+      <rect x="102" y="138" width="276" height="26" fill="#2a468f" opacity="0.55"/>
+      <rect x="102" y="186" width="276" height="20" fill="#5f81d2" opacity="0.4"/>
+    </g>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#nep-clouds)" opacity="0.28"/>
+    <g>
+      <ellipse cx="196" cy="104" rx="28" ry="16" fill="url(#nep-grds)"/>
+      <ellipse cx="196" cy="104" rx="28" ry="16" fill="none" stroke="#1a2c5e" stroke-width="1.4" opacity="0.6"/>
+      <path d="M176,98 q20,-8 40,2" fill="none" stroke="#bcd0f4" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+    </g>
+    <g fill="#e2ecfb" opacity="0.6" stroke-linecap="round">
+      <path d="M214,128 q34,-6 64,2 q-30,8 -64,2 Z"/>
+      <path d="M150,150 q26,-4 48,2 q-24,7 -48,2 Z" opacity="0.7"/>
+    </g>
+    <rect x="102" y="-18" width="276" height="276" fill="url(#nep-shade)"/>
+    <ellipse cx="190" cy="74" rx="42" ry="24" fill="#eaf2ff" opacity="0.12"/>
+  </g>
+  <circle cx="240" cy="120" r="138" fill="none" stroke="#c2d6ff" stroke-opacity="0.18" stroke-width="1.5"/>
+</svg>`,
     badges: [
       { hue: 'teal', text: 'Ice giant' },
       { hue: 'lime', text: 'Predicted by mathematics' },
