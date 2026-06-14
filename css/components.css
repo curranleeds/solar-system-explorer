@@ -925,12 +925,16 @@ body {
     top: calc(var(--cosmic-spacing-lg) + 44px);
     left: var(--cosmic-spacing-lg);
     right: var(--cosmic-spacing-lg);
+    z-index: 1000;
     flex-direction: column;
     gap: var(--cosmic-spacing-md);
     padding: var(--cosmic-spacing-lg) var(--cosmic-spacing-xl);
+    padding-bottom: var(--cosmic-spacing-2xl);
     border-radius: var(--cosmic-radius-lg);
-    max-height: calc(100vh - var(--cosmic-spacing-lg) - 44px - var(--cosmic-spacing-lg));
+    max-height: 90vh;
+    max-height: 90dvh;
     overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--cosmic-border-neutral-strong) transparent;
   }
@@ -982,7 +986,6 @@ body {
   /* bottom bar: TIMELINE button, rightmost */
   .mobile-bar {
     position: fixed;
-    left: var(--cosmic-spacing-lg);
     right: var(--cosmic-spacing-lg);
     bottom: var(--cosmic-spacing-lg);
     display: flex;
