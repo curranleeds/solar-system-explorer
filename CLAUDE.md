@@ -97,7 +97,7 @@ Exposed for testing/automation (harmless, consistent with the original author's 
 - **Case-insensitive macOS filesystem**: `Sun.png` and `sun.png` are the SAME file. NEVER write a lowercase file then `rm` the capitalized one — it deletes both. (This already caused two accidental deletions; originals were recovered from `~/Downloads`.) To rename case-only, copy from a different directory or `git mv`.
 - All planet image files are **lowercase** in `images/planets/`.
 - Design system: use `--cosmic-*` tokens; Deep Space dark glass aesthetic; lime = selection/active, teal = informational.
-- Cache-busting: script/style tags in `index.html` use `?v=N`. **Bump these (and ideally add `?v` to planet-art.js/images) when deploying** so returning visitors don't get stale JS/CSS. (Currently `?v=3`.)
+- Cache-busting: script/style tags in `index.html` use `?v=N`. **Bump these when deploying** so returning visitors don't get stale JS/CSS. (Currently `?v=4`; all CSS/JS tags including `planet-art.js` carry it.)
 - No build/test tooling. "Tests" = open the app and look. Verify visual changes via the preview workflow above.
 
 ## Deploy
