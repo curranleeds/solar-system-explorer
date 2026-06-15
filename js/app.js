@@ -185,6 +185,7 @@
       rPeri, rEnter,
       pass, gap, cycle: pass + gap, offset: 0,
       active: false, bright: 0, x: 0, y: 0, prevX: 0, prevY: 0, vx: 0, vy: 0,
+      history: [],
     };
   });
   COMETS.forEach((c) => { c.offset = Math.random() * c.cycle; });
@@ -594,9 +595,13 @@
       )
       .join('');
 
+    const imgId = obj.id === 'sol' ? 'sun' : obj.id;
     panelScroll.innerHTML = `
       <article class="panel-content">
-        ${info.illustration ? `<figure class="panel-illustration">${info.illustration}</figure>` : ''}
+        <div class="panel-art">
+          <img class="panel-art-img" src="images/planets/${imgId}.png" alt="" aria-hidden="true" />
+          <canvas class="panel-art-anim" aria-hidden="true"></canvas>
+        </div>
         <div class="badge-row">${badges}</div>
         <h2 class="object-name" id="panel-name">${escapeHtml(obj.name)}</h2>
         <p class="lede">${escapeHtml(info.lede)}</p>
@@ -635,6 +640,32 @@
     return true;
   }
 
+  /* ---- panel pixel-art canvas: one named loop at a time ----
+     Each planet/Sun panel carries a <canvas class="panel-art">. On open
+     we hand it to PLANET_ART[id] with a cancel token; on close (or when
+     another body opens) we flip the token so the running loop stops.
+     Only one loop is ever live. */
+  let panelArtToken = null;
+
+  function stopPanelArt() {
+    if (panelArtToken) {
+      panelArtToken.cancelled = true;
+      panelArtToken = null;
+    }
+  }
+
+  function startPanelArt(obj) {
+    stopPanelArt();
+    const canvas = panelScroll.querySelector('.panel-art-anim');
+    if (!canvas) return; // non-planet panels carry no art canvas
+    if (reducedMotion) return; // base image alone, no animation loop
+    const art = (window.PLANET_ART || {})[obj.id];
+    if (typeof art !== 'function') return; // no overlay yet — image shows alone
+    const token = { cancelled: false, reducedMotion };
+    panelArtToken = token;
+    art(canvas, token);
+  }
+
   function showPanel(obj) {
     if (!renderPanel(obj)) return;
     panelScroll.scrollTop = 0;
@@ -646,9 +677,11 @@
     panel.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
     syncMoonUI();
+    startPanelArt(obj);
   }
 
   function hidePanel() {
+    stopPanelArt();
     panel.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
   }
@@ -1318,6 +1351,7 @@
 
   function updateComets() {
     if (!showComets) return;
+    const MAXQ = innerWidth < 768 ? 30 : 60; // cap; shorter on mobile
     for (const c of COMETS) {
       const p = (((cometClock - c.offset) % c.cycle) + c.cycle) % c.cycle;
       c.prevX = c.x;
@@ -1336,8 +1370,22 @@
         c.bright = clamp01((c.rEnter - r) / (c.rEnter - c.rPeri));
         c.vx = c.x - c.prevX;
         c.vy = c.y - c.prevY;
+        // record the head's path resampled by distance (index 0 = newest):
+        // a new entry only once the head has moved >= MIN_STEP world px. This
+        // keeps the trail spatially spread when the comet is slow (so it never
+        // collapses) while still stretching when it moves fast.
+        const MIN_STEP = 4;
+        const h0 = c.history[0];
+        const moved = h0 ? Math.hypot(c.x - h0.x, c.y - h0.y) : Infinity;
+        if (moved >= MIN_STEP) {
+          c.history.unshift({ x: c.x, y: c.y });
+          if (c.history.length > MAXQ) c.history.length = MAXQ;
+        } else if (c.history.length > MAXQ) {
+          c.history.length = MAXQ;
+        }
       } else {
         c.active = false;
+        if (c.history.length) c.history.length = 0;
       }
     }
   }
@@ -1366,69 +1414,91 @@
     }
   }
 
+  /* ---- comet tail: physics-based pixel particle trail ----
+     The tail is the comet head's own position history (world space), so
+     it curves along the real path. Particles fade lime→neutral→clear and
+     shrink head→tail; per-frame jitter and seeded size give a dusty feel.
+     Colors are read from CDS tokens at runtime. */
+  const parseHexC = (hex) => {
+    const m = /^#?([0-9a-f]{6})$/i.exec((hex || '').trim());
+    if (!m) return { r: 205, g: 222, b: 0 };
+    const n = parseInt(m[1], 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  };
+  let cometLime = null;
+  function cometColors() {
+    if (cometLime) return cometLime;
+    const cs = getComputedStyle(document.documentElement);
+    cometLime = parseHexC(cs.getPropertyValue('--cosmic-interactive-primary'));
+    return cometLime;
+  }
+  let cometFrame = 0;
+  const seededRand = (a, b) => {
+    const s = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+    return s - Math.floor(s);
+  };
+
+  function drawCometTail(c, lime) {
+    const hist = c.history;
+    if (hist.length < 2) return;
+    // draw the whole distance-resampled queue: it stretches when fast (entries
+    // spaced by per-frame travel) and persists when slow (entries spaced by the
+    // MIN_STEP floor). Reduced motion shows a static 10-particle tail.
+    const count = reducedMotion ? Math.min(10, hist.length) : hist.length;
+    const mobile = innerWidth < 768;
+    const jitter = !reducedMotion && !mobile;
+    const denom = Math.max(1, count - 1);
+    for (let i = 1; i < count; i++) {
+      const h = hist[i];
+      const sp = toScreen(h.x, h.y);
+      if (sp.x < -20 || sp.x > W + 20 || sp.y < -20 || sp.y > H + 20) continue;
+      const age = i / denom; // 0 near head → 1 tail end
+      let size = 2.9 - 1.9 * age; // 2-3px head → 1px tail
+      if (!reducedMotion) size += (seededRand(i * 1.7, cometFrame) - 0.5) * 0.9;
+      size = Math.max(1, Math.round(size));
+      let ox = 0, oy = 0;
+      if (jitter) {
+        ox = (seededRand(i, cometFrame) - 0.5) * 4; // ±2px
+        oy = (seededRand(i + 777, cometFrame) - 0.5) * 4;
+      }
+      // lime at the head → white toward the tail, fading to transparent
+      const r = (lime.r + (255 - lime.r) * age) | 0;
+      const g = (lime.g + (255 - lime.g) * age) | 0;
+      const b = (lime.b + (255 - lime.b) * age) | 0;
+      const alpha = (1 - age) * (0.7 + 0.3 * c.bright); // opaque head → transparent end
+      if (alpha <= 0.02) continue;
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`;
+      ctx.fillRect(Math.round(sp.x + ox - size / 2), Math.round(sp.y + oy - size / 2), size, size);
+    }
+  }
+
   function drawComets() {
     if (!showComets) return;
-    const sun = toScreen(0, 0);
+    cometFrame++;
+    const lime = cometColors();
     for (const c of COMETS) {
       if (!c.active) continue;
       const s = toScreen(c.x, c.y);
       if (s.x < -240 || s.x > W + 240 || s.y < -240 || s.y > H + 240) continue;
-
-      // tail points anti-solar; length and brightness peak near perihelion
-      let dx = s.x - sun.x;
-      let dy = s.y - sun.y;
-      const dl = Math.hypot(dx, dy) || 1;
-      dx /= dl;
-      dy /= dl;
       const bright = c.bright;
       const lit = selected === c || hovered === c;
 
+      drawCometTail(c, lime);
+
       if (c.fragments) {
         // "string of pearls": a chain of nuclei along the motion vector
-        let mx = c.vx;
-        let my = c.vy;
+        let mx = c.vx, my = c.vy;
         const ml = Math.hypot(mx, my) || 1;
-        mx /= ml;
-        my /= ml;
-        const N = 6;
-        const spacing = 7;
+        mx /= ml; my /= ml;
+        const N = 6, spacing = 7;
         for (let i = 0; i < N; i++) {
           const off = (i - (N - 1) / 2) * spacing;
-          const fx = s.x + mx * off;
-          const fy = s.y + my * off;
           const fr = 1.6 + 1.4 * Math.abs(1 - Math.abs(off) / (spacing * N));
-          const tl = 14 + 26 * bright;
-          const grad = ctx.createLinearGradient(fx, fy, fx + dx * tl, fy + dy * tl);
-          grad.addColorStop(0, `rgba(${COLOR.cometTail}, ${0.35 * bright + 0.12})`);
-          grad.addColorStop(1, `rgba(${COLOR.cometTail}, 0)`);
-          ctx.beginPath();
-          ctx.moveTo(fx, fy);
-          ctx.lineTo(fx + dx * tl, fy + dy * tl);
-          ctx.lineWidth = 2.4;
-          ctx.strokeStyle = grad;
-          ctx.stroke();
-          drawCometHead({ x: fx, y: fy }, fr, lit && i === Math.floor(N / 2));
+          drawCometHead({ x: s.x + mx * off, y: s.y + my * off }, fr, lit && i === Math.floor(N / 2));
         }
-        ctx.lineWidth = 1;
-        continue;
+      } else {
+        drawCometHead(s, 2.4 + 3.2 * bright, lit);
       }
-
-      const tailLen = 36 + 150 * bright;
-      const headR = 2.4 + 3.2 * bright;
-      const tx = s.x + dx * tailLen;
-      const ty = s.y + dy * tailLen;
-      const w = 3 + 5 * bright;
-      const grad = ctx.createLinearGradient(s.x, s.y, tx, ty);
-      grad.addColorStop(0, `rgba(${COLOR.cometTail}, ${0.5 * bright + 0.18})`);
-      grad.addColorStop(1, `rgba(${COLOR.cometTail}, 0)`);
-      ctx.beginPath();
-      ctx.moveTo(s.x - dy * w, s.y + dx * w);
-      ctx.lineTo(s.x + dy * w, s.y - dx * w);
-      ctx.lineTo(tx, ty);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-      drawCometHead(s, headR, lit);
     }
   }
 

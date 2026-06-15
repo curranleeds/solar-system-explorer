@@ -681,6 +681,33 @@ body {
   height: 100%;
 }
 
+/* full-bleed banner: static planet image (base) + animation overlay canvas */
+.panel-art {
+  position: relative;
+  width: calc(100% + 2 * var(--cosmic-spacing-xl));
+  aspect-ratio: 2 / 1;
+  margin: calc(-1 * var(--cosmic-spacing-xl)) calc(-1 * var(--cosmic-spacing-xl)) var(--cosmic-spacing-xl);
+  background: #05080f;
+  border-radius: var(--cosmic-radius-lg) var(--cosmic-radius-lg) 0 0;
+  border-bottom: 1px solid var(--cosmic-border-neutral-default);
+  overflow: hidden;
+}
+
+.panel-art-img,
+.panel-art-anim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* the whole round planet, centered (poles never cropped) */
+.panel-art-img {
+  object-fit: contain;
+}
+
 .panel-content .object-name {
   font: var(--cosmic-type-h1);
   margin-bottom: var(--cosmic-spacing-md);
