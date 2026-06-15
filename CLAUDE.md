@@ -100,6 +100,13 @@ Exposed for testing/automation (harmless, consistent with the original author's 
 - Cache-busting: script/style tags in `index.html` use `?v=N`. **Bump these when deploying** so returning visitors don't get stale JS/CSS. (Currently `?v=4`; all CSS/JS tags including `planet-art.js` carry it.)
 - No build/test tooling. "Tests" = open the app and look. Verify visual changes via the preview workflow above.
 
+## Commit conventions (user preference)
+Commit **each logical change as its own descriptive commit**, as you go — don't
+batch many features into one commit just because a push was requested. Each
+message: a clear subject line + a short body of what changed and why, so `git log`
+reads as a step-by-step history. Still only **push** when the user asks (or
+confirm first), but commit locally and frequently in between.
+
 ## Deploy
 Push to `main`; GitHub Pages serves the repo root (`.nojekyll` present). `gh` is authenticated on this machine, so `git push` works. If the repo URL changes, update `og:url`/`og:image` in `index.html` and the masthead "View source" link.
 
